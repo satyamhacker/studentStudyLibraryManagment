@@ -1,0 +1,57 @@
+# Node.js / Express
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+package-lock.json  # Optional: include if you prefer yarn.lock instead
+ yarn.lock        # Optional: include if you prefer package-lock.json instead
+
+# React
+/build             # React build output
+/dist             # Alternative build output
+/public/build     # If you have build in public folder
+
+# MySQL / Database
+*.sql             # SQL dump files
+*.db              # Database files
+database.json     # Common database config file
+
+# Environment variables
+.env              # Environment variables
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Dependency directories
+bower_components/
+
+# OS generated files
+.DS_Store         # macOS
+Thumbs.db         # Windows
+
+# Editor directories and files
+.idea/           # IntelliJ
+.vscode/         # VS Code (optional, if you want to share settings remove this)
+*.suo            # Visual Studio
+*.ntvs*          # Visual Studio
+*.njsproj        # Visual Studio
+*.sln            # Visual Studio
+
+# Build artifacts
+*.pid
+*.seed
+*.pid.lock
+
+# Testing
+/coverage
+*.lcov
+
+# Misc
+*.swp
+*~
