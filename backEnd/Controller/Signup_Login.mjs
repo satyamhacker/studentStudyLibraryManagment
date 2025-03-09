@@ -7,8 +7,7 @@ export const signupCreate = async (req, res) => {
     // Extract data from the request body
     const { email, password } = req.body;
 
-    console.log("input email==>", email);
-    console.log("input password==>", password);
+
 
     // Check if the user already exists
     const existingUser = await SignupData.findOne({ email });

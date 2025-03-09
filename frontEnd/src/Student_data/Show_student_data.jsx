@@ -8,7 +8,7 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
-import { IconButton } from "@mui/material";
+import { IconButton, TextField, MenuItem } from "@mui/material"; // Added MenuItem import
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
@@ -22,6 +22,7 @@ const ShowStudentData = () => {
   const [currentStudent, setCurrentStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [studentToDelete, setStudentToDelete] = useState(null);
+  const [errors, setErrors] = useState({}); // Added errors state
   const navigate = useNavigate();
 
   // Fetch student data from backend
@@ -29,13 +30,23 @@ const ShowStudentData = () => {
     fetchStudentData();
   }, []);
 
+  const timeOptions = [
+    { label: "06:00 - 10:00", value: "06:00-10:00" },
+    { label: "10:00 - 14:00", value: "10:00-14:00" },
+    { label: "14:00 - 18:00", value: "14:00-18:00" },
+    { label: "18:00 - 22:00", value: "18:00-22:00" },
+    { label: "22:00 - 06:00", value: "22:00-06:00" },
+    { label: "Reserved", value: "reserved" },
+  ];
+
   const fetchStudentData = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents");
+      const response = await axios.get("http://localhost:3000/getStudents"); // Corrected endpoint
       if (response.data.length === 0) {
         alert("Please add Student data.");
         navigate("/addStudent");
       } else {
+        console.log(response.data);
         setStudents(response.data);
       }
     } catch (error) {
@@ -57,6 +68,7 @@ const ShowStudentData = () => {
   // Handle showing the edit modal
   const showEditModalForStudent = (student) => {
     setCurrentStudent(student);
+    setErrors({}); // Reset errors when opening modal
     setShowEditModal(true);
   };
 
@@ -69,14 +81,23 @@ const ShowStudentData = () => {
   // Handle updating a student
   const handleUpdateStudent = async () => {
     try {
+      // Basic validation for TimeSlots
+      if (!currentStudent?.TimeSlots || currentStudent.TimeSlots.length === 0) {
+        setErrors({ TimeSlots: "At least one time slot is required" });
+        return;
+      }
+
       await axios.put(
-        `http://localhost:3000/updateStudent/${currentStudent._id}`,
+        `http://localhost:3000/updateStudent/${currentStudent.id}`,
         currentStudent
       );
       setShowEditModal(false);
       fetchStudentData(); // Refresh the list after update
     } catch (error) {
       console.error("Error updating student:", error);
+      if (error.response?.data?.error === "Validation failed") {
+        setErrors({ ...errors, api: error.response.data.details.join(", ") });
+      }
     }
   };
 
@@ -106,11 +127,25 @@ const ShowStudentData = () => {
     return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
   };
 
+  // Handle TimeSlots change in the edit modal
+  const handleTimeChange = (e) => {
+    const selectedTimes = e.target.value; // Array of selected values
+    setCurrentStudent((prev) => ({
+      ...prev,
+      TimeSlots: selectedTimes,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      TimeSlots:
+        selectedTimes.length > 0 ? "" : "At least one time slot is required",
+    }));
+  };
+
   return (
     <Container>
       <Row>
         <Col md={8}>
-          <h1 className="bg-blue-700">All Students Data</h1>
+          <h1 className="bg-blue-700 text-white p-2">All Students Data</h1>
         </Col>
         <Col md={4}>
           <Form inline="true">
@@ -134,12 +169,13 @@ const ShowStudentData = () => {
         <Table striped bordered hover responsive>
           <thead>
             <tr>
-              <th>Admission Number</th>
+              <th>Registration Number</th>
               <th>Admission Date</th>
               <th>Student Name</th>
+              <th>Father's Name</th>
               <th>Address</th>
               <th>Contact Number</th>
-              <th>Time</th>
+              <th>Time Slots</th>
               <th>Shift</th>
               <th>Seat Number</th>
               <th>Amount Paid</th>
@@ -151,17 +187,18 @@ const ShowStudentData = () => {
           </thead>
           <tbody>
             {filteredStudents.map((student) => (
-              <tr key={student._id}>
-                <td>{student.AdmissionNumber}</td>
+              <tr key={student.id}>
+                <td>{student.RegistrationNumber}</td>
                 <td>{formatDate(student.AdmissionDate)}</td>
                 <td>{student.StudentName}</td>
+                <td>{student.FatherName}</td>
                 <td>{student.Address}</td>
                 <td>{student.ContactNumber}</td>
-                <td>{student.Time}</td>
+                <td>{student.TimeSlots.join(", ")}</td>
                 <td>{student.Shift}</td>
                 <td>{student.SeatNumber}</td>
                 <td>{"₹" + student.AmountPaid}</td>
-                <td>{"₹" + student.AmountDue}</td>
+                <td>{"₹" + (student.AmountDue || "0")}</td>
                 <td>{student.LockerNumber}</td>
                 <td>{formatDate(student.FeesPaidTillDate)}</td>
                 <td>
@@ -185,21 +222,21 @@ const ShowStudentData = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="AdmissionNumber">
-              <Form.Label>Admission Number</Form.Label>
+            <Form.Group controlId="RegistrationNumber" className="mb-3">
+              <Form.Label>Registration Number</Form.Label>
               <Form.Control
                 type="text"
-                value={currentStudent?.AdmissionNumber || ""}
+                value={currentStudent?.RegistrationNumber || ""}
                 onChange={(e) =>
                   setCurrentStudent((prev) => ({
                     ...prev,
-                    AdmissionNumber: e.target.value,
+                    RegistrationNumber: e.target.value,
                   }))
                 }
               />
             </Form.Group>
 
-            <Form.Group controlId="AdmissionDate">
+            <Form.Group controlId="AdmissionDate" className="mb-3">
               <Form.Label>Admission Date</Form.Label>
               <Form.Control
                 type="date"
@@ -217,7 +254,7 @@ const ShowStudentData = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="StudentName">
+            <Form.Group controlId="StudentName" className="mb-3">
               <Form.Label>Student Name</Form.Label>
               <Form.Control
                 type="text"
@@ -231,7 +268,21 @@ const ShowStudentData = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="Address">
+            <Form.Group controlId="FatherName" className="mb-3">
+              <Form.Label>Father's Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={currentStudent?.FatherName || ""}
+                onChange={(e) =>
+                  setCurrentStudent((prev) => ({
+                    ...prev,
+                    FatherName: e.target.value,
+                  }))
+                }
+              />
+            </Form.Group>
+
+            <Form.Group controlId="Address" className="mb-3">
               <Form.Label>Address</Form.Label>
               <Form.Control
                 type="text"
@@ -245,7 +296,7 @@ const ShowStudentData = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="ContactNumber">
+            <Form.Group controlId="ContactNumber" className="mb-3">
               <Form.Label>Contact Number</Form.Label>
               <Form.Control
                 type="text"
@@ -259,21 +310,31 @@ const ShowStudentData = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="Time">
-              <Form.Label>Time</Form.Label>
-              <Form.Control
-                type="text"
-                value={currentStudent?.Time || ""}
-                onChange={(e) =>
-                  setCurrentStudent((prev) => ({
-                    ...prev,
-                    Time: e.target.value,
-                  }))
-                }
-              />
+            <Form.Group controlId="TimeSlots" className="mb-3">
+              <Form.Label>Time Slots</Form.Label>
+              <TextField
+                select
+                variant="outlined"
+                name="TimeSlots"
+                value={currentStudent?.TimeSlots || []} // Default to empty array if undefined
+                onChange={handleTimeChange}
+                fullWidth
+                required
+                SelectProps={{
+                  multiple: true,
+                }}
+                error={!!errors.TimeSlots}
+                helperText={errors.TimeSlots}
+              >
+                {timeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Form.Group>
 
-            <Form.Group controlId="Shift">
+            <Form.Group controlId="Shift" className="mb-3">
               <Form.Label>Shift</Form.Label>
               <Form.Control
                 type="text"
@@ -287,7 +348,7 @@ const ShowStudentData = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="SeatNumber">
+            <Form.Group controlId="SeatNumber" className="mb-3">
               <Form.Label>Seat Number</Form.Label>
               <Form.Control
                 type="text"
@@ -301,7 +362,7 @@ const ShowStudentData = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="AmountPaid">
+            <Form.Group controlId="AmountPaid" className="mb-3">
               <Form.Label>Amount Paid</Form.Label>
               <Form.Control
                 type="number"
@@ -315,7 +376,7 @@ const ShowStudentData = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="AmountDue">
+            <Form.Group controlId="AmountDue" className="mb-3">
               <Form.Label>Amount Due</Form.Label>
               <Form.Control
                 type="number"
@@ -329,7 +390,7 @@ const ShowStudentData = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="LockerNumber">
+            <Form.Group controlId="LockerNumber" className="mb-3">
               <Form.Label>Locker Number</Form.Label>
               <Form.Control
                 type="text"
@@ -343,7 +404,7 @@ const ShowStudentData = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="FeesPaidTillDate">
+            <Form.Group controlId="FeesPaidTillDate" className="mb-3">
               <Form.Label>Fees Paid Till Date</Form.Label>
               <Form.Control
                 type="date"
@@ -361,12 +422,20 @@ const ShowStudentData = () => {
               />
             </Form.Group>
           </Form>
+          {errors.api && <p className="text-danger">{errors.api}</p>}{" "}
+          {/* Display API errors */}
         </Modal.Body>
         <Modal.Footer>
-          <Button className="bg-black" onClick={() => setShowEditModal(false)}>
+          <Button
+            className="bg-black text-white"
+            onClick={() => setShowEditModal(false)}
+          >
             Close
           </Button>
-          <Button className="bg-blue-800" onClick={handleUpdateStudent}>
+          <Button
+            className="bg-blue-800 text-white"
+            onClick={handleUpdateStudent}
+          >
             Save Changes
           </Button>
         </Modal.Footer>
@@ -383,14 +452,14 @@ const ShowStudentData = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            className="bg-black"
+            className="bg-black text-white"
             onClick={() => setShowDeleteModal(false)}
           >
             Cancel
           </Button>
           <Button
-            className="bg-red-700"
-            onClick={() => deleteStudent(studentToDelete?._id)}
+            className="bg-red-700 text-white"
+            onClick={() => deleteStudent(studentToDelete?.id)}
           >
             Delete
           </Button>

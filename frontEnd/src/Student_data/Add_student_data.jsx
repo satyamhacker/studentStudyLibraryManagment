@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import { TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment, MenuItem } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
 import PaymentIcon from "@mui/icons-material/Payment";
@@ -8,12 +8,13 @@ import axios from "axios";
 
 const AddStudent = () => {
   const [studentData, setStudentData] = useState({
-    AdmissionNumber: "",
+    RegistrationNumber: "",
     AdmissionDate: "",
     StudentName: "",
+    FatherName: "",
     Address: "",
     ContactNumber: "",
-    Time: "",
+    TimeSlots: [],
     Shift: "",
     SeatNumber: "",
     FeesPaidTillDate: "",
@@ -22,38 +23,97 @@ const AddStudent = () => {
     LockerNumber: "",
   });
 
-  const [contactError, setContactError] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const timeOptions = [
+    { label: "06:00 - 10:00", value: "06:00-10:00" },
+    { label: "10:00 - 14:00", value: "10:00-14:00" },
+    { label: "14:00 - 18:00", value: "14:00-18:00" },
+    { label: "18:00 - 22:00", value: "18:00-22:00" },
+    { label: "22:00 - 06:00", value: "22:00-06:00" },
+    { label: "Reserved", value: "reserved" },
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Validate Contact Number to ensure it is 10 digits
+
     if (name === "ContactNumber") {
-      const regex = /^\d{0,10}$/; // Allow only numbers and max length of 10
+      const regex = /^\d{0,10}$/;
       if (regex.test(value) || value === "") {
-        setContactError(
-          value.length > 10 ? "Contact Number must be 10 digits." : ""
-        );
+        setErrors({
+          ...errors,
+          ContactNumber:
+            value.length > 10 ? "Contact Number must be 10 digits" : "",
+        });
         setStudentData({
           ...studentData,
           [name]: value,
         });
       } else {
-        setContactError("Contact Number must be numeric.");
+        setErrors({
+          ...errors,
+          ContactNumber: "Contact Number must be numeric",
+        });
       }
     } else {
       setStudentData({
         ...studentData,
         [name]: value,
       });
+      // Clear error when user starts typing
+      setErrors({
+        ...errors,
+        [name]: "",
+      });
     }
+  };
+
+  const handleTimeChange = (e) => {
+    const selectedTimes = e.target.value;
+    setStudentData({
+      ...studentData,
+      TimeSlots: selectedTimes,
+    });
+    setErrors({
+      ...errors,
+      TimeSlots: "",
+    });
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    Object.keys(studentData).forEach((key) => {
+      if (key === "TimeSlots") {
+        if (studentData[key].length === 0) {
+          newErrors[key] = "Please select at least one time slot";
+        }
+      } else if (
+        key !== "SeatNumber" &&
+        key !== "LockerNumber" &&
+        key !== "AmountDue"
+      ) {
+        // Optional fields
+        if (!studentData[key]) {
+          newErrors[key] = `${key
+            .replace(/([A-Z])/g, " $1")
+            .trim()} is required`;
+        }
+      }
+    });
+
+    if (studentData.ContactNumber.length !== 10) {
+      newErrors.ContactNumber = "Contact Number must be exactly 10 digits";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Final validation for Contact Number
-    if (studentData.ContactNumber.length !== 10) {
-      setContactError("Contact Number must be exactly 10 digits.");
+    if (!validateForm()) {
       return;
     }
 
@@ -64,20 +124,24 @@ const AddStudent = () => {
         AmountDue: studentData.AmountDue.replace("₹", "").trim(),
       };
 
+      console.log("Data being sent to backend:", formattedData);
+
       const response = await axios.post(
         "http://localhost:3000/addStudent",
         formattedData
       );
 
       alert(response.data.message);
-      console.log(response);
+      console.log("Server response:", response);
+
       setStudentData({
-        AdmissionNumber: "",
+        RegistrationNumber: "",
         AdmissionDate: "",
         StudentName: "",
+        FatherName: "",
         Address: "",
         ContactNumber: "",
-        Time: "",
+        TimeSlots: [],
         Shift: "",
         SeatNumber: "",
         FeesPaidTillDate: "",
@@ -85,12 +149,21 @@ const AddStudent = () => {
         AmountDue: "",
         LockerNumber: "",
       });
+      setErrors({});
     } catch (error) {
-      // Check if error response is available
-      const errorMessage =
-        error.response?.data?.error || "Error adding student data";
-      console.error("Error adding student:", errorMessage);
-      alert(errorMessage); // Show error message to the user
+      if (error.response?.status === 409) {
+        const { conflictingStudent } = error.response.data;
+        alert(
+          `Seat ${studentData.SeatNumber} is occupied by ${
+            conflictingStudent.StudentName
+          } for time slots: ${conflictingStudent.TimeSlots.join(", ")}`
+        );
+      } else {
+        const errorMessage =
+          error.response?.data?.error || "Error adding student data";
+        console.error("Error adding student:", errorMessage);
+        alert(errorMessage);
+      }
     }
   };
 
@@ -101,15 +174,17 @@ const AddStudent = () => {
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label>Admission Number</Form.Label>
+              <Form.Label>Registration Number</Form.Label>
               <TextField
                 variant="outlined"
-                name="AdmissionNumber"
-                value={studentData.AdmissionNumber}
+                name="RegistrationNumber"
+                value={studentData.RegistrationNumber}
                 onChange={handleChange}
                 fullWidth
                 required
-                placeholder="Enter Admission Number"
+                placeholder="Enter Registration Number"
+                error={!!errors.RegistrationNumber}
+                helperText={errors.RegistrationNumber}
               />
             </Form.Group>
           </Col>
@@ -124,6 +199,8 @@ const AddStudent = () => {
                 onChange={handleChange}
                 fullWidth
                 required
+                error={!!errors.AdmissionDate}
+                helperText={errors.AdmissionDate}
               />
             </Form.Group>
           </Col>
@@ -148,9 +225,30 @@ const AddStudent = () => {
                     </InputAdornment>
                   ),
                 }}
+                error={!!errors.StudentName}
+                helperText={errors.StudentName}
               />
             </Form.Group>
           </Col>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>Father's Name</Form.Label>
+              <TextField
+                variant="outlined"
+                name="FatherName"
+                value={studentData.FatherName}
+                onChange={handleChange}
+                fullWidth
+                required
+                placeholder="Enter Father's Name"
+                error={!!errors.FatherName}
+                helperText={errors.FatherName}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
               <Form.Label>Address</Form.Label>
@@ -162,12 +260,11 @@ const AddStudent = () => {
                 fullWidth
                 required
                 placeholder="Enter Address"
+                error={!!errors.Address}
+                helperText={errors.Address}
               />
             </Form.Group>
           </Col>
-        </Row>
-
-        <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
               <Form.Label>Contact Number</Form.Label>
@@ -186,28 +283,39 @@ const AddStudent = () => {
                     </InputAdornment>
                   ),
                 }}
-                error={!!contactError} // Display error state
-                helperText={contactError} // Show error message
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Time</Form.Label>
-              <TextField
-                variant="outlined"
-                name="Time"
-                value={studentData.Time}
-                onChange={handleChange}
-                fullWidth
-                required
-                placeholder="Enter Time e.g 10 AM to 5 PM"
+                error={!!errors.ContactNumber}
+                helperText={errors.ContactNumber}
               />
             </Form.Group>
           </Col>
         </Row>
 
         <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3">
+              <Form.Label>Time Slots</Form.Label>
+              <TextField
+                select
+                variant="outlined"
+                name="TimeSlots"
+                value={studentData.TimeSlots}
+                onChange={handleTimeChange}
+                fullWidth
+                required
+                SelectProps={{
+                  multiple: true,
+                }}
+                error={!!errors.TimeSlots}
+                helperText={errors.TimeSlots}
+              >
+                {timeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Form.Group>
+          </Col>
           <Col md={6}>
             <Form.Group className="mb-3">
               <Form.Label>Shift</Form.Label>
@@ -219,9 +327,14 @@ const AddStudent = () => {
                 fullWidth
                 required
                 placeholder="Enter Shift"
+                error={!!errors.Shift}
+                helperText={errors.Shift}
               />
             </Form.Group>
           </Col>
+        </Row>
+
+        <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
               <Form.Label>Seat Number</Form.Label>
@@ -232,12 +345,11 @@ const AddStudent = () => {
                 onChange={handleChange}
                 fullWidth
                 placeholder="Enter Seat Number"
+                error={!!errors.SeatNumber}
+                helperText={errors.SeatNumber}
               />
             </Form.Group>
           </Col>
-        </Row>
-
-        <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
               <Form.Label>Locker Number</Form.Label>
@@ -248,9 +360,14 @@ const AddStudent = () => {
                 onChange={handleChange}
                 fullWidth
                 placeholder="Enter Locker Number"
+                error={!!errors.LockerNumber}
+                helperText={errors.LockerNumber}
               />
             </Form.Group>
           </Col>
+        </Row>
+
+        <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
               <Form.Label>Fees Paid Till Date</Form.Label>
@@ -262,6 +379,8 @@ const AddStudent = () => {
                 onChange={handleChange}
                 fullWidth
                 required
+                error={!!errors.FeesPaidTillDate}
+                helperText={errors.FeesPaidTillDate}
               />
             </Form.Group>
           </Col>
@@ -285,6 +404,8 @@ const AddStudent = () => {
                 </InputAdornment>
               ),
             }}
+            error={!!errors.AmountPaid}
+            helperText={errors.AmountPaid}
           />
         </Form.Group>
 
@@ -305,6 +426,8 @@ const AddStudent = () => {
                 </InputAdornment>
               ),
             }}
+            error={!!errors.AmountDue}
+            helperText={errors.AmountDue}
           />
         </Form.Group>
 

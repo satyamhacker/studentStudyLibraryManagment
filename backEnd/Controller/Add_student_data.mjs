@@ -1,14 +1,16 @@
-import AddData from "../Models/Add_Student_Data.mjs";
+import { Student } from '../Models/modelsImportExport.mjs'; // Adjusted path and import
+import { Op, fn, literal } from 'sequelize'; // Ensure Op, fn, and literal are imported
 
 export const addStudentData = async (req, res) => {
   try {
     const {
-      AdmissionNumber,
+      RegistrationNumber,
       AdmissionDate,
       StudentName,
+      FatherName,
       Address,
       ContactNumber,
-      Time,
+      TimeSlots,
       Shift,
       SeatNumber,
       FeesPaidTillDate,
@@ -17,66 +19,99 @@ export const addStudentData = async (req, res) => {
       LockerNumber,
     } = req.body;
 
-    // Validate the received data
+    // Validate required fields
     if (
-      !AdmissionNumber ||
+      !RegistrationNumber ||
       !AdmissionDate ||
       !StudentName ||
+      !FatherName ||
       !Address ||
       !ContactNumber ||
-      !Time ||
+      !TimeSlots || !Array.isArray(TimeSlots) || TimeSlots.length === 0 ||
       !Shift ||
       !FeesPaidTillDate ||
       !AmountPaid
     ) {
-      return res.status(400).json({ error: "All fields are required" });
+      return res.status(400).json({ error: 'All required fields must be provided and TimeSlots must be a non-empty array' });
     }
 
-    // Check if AdmissionNumber or ContactNumber already exists
-    const existingStudent = await AddData.findOne({
-      $or: [{ AdmissionNumber }, { ContactNumber }],
+    // Check if RegistrationNumber or ContactNumber already exists
+    const existingStudent = await Student.findOne({
+      where: {
+        [Op.or]: [
+          { RegistrationNumber },
+          { ContactNumber },
+        ],
+      },
     });
 
     if (existingStudent) {
-      // Determine which field is duplicated and return the corresponding error
-      if (existingStudent.AdmissionNumber == AdmissionNumber) {
+      if (existingStudent.RegistrationNumber === RegistrationNumber) {
         return res.status(400).json({
-          error: "This Admission Number is already in use.",
-          field: "AdmissionNumber",
+          error: 'This Registration Number is already in use.',
+          field: 'RegistrationNumber',
         });
       }
-
       if (existingStudent.ContactNumber === ContactNumber) {
         return res.status(400).json({
-          error: "This Contact Number is already in use.",
-          field: "ContactNumber",
+          error: 'This Contact Number is already in use.',
+          field: 'ContactNumber',
         });
       }
     }
 
-    // Create a new student data record in the database
-    const newStudentData = await AddData.create({
-      AdmissionNumber,
+    // Check for seat and time slot conflict only if SeatNumber is not "0"
+    let conflictingStudent = null;
+    if (SeatNumber !== "0") {
+      conflictingStudent = await Student.findOne({
+        where: {
+          SeatNumber, // Match the exact seat number
+          [Op.and]: [
+            literal(`JSON_OVERLAPS(TimeSlots, '${JSON.stringify(TimeSlots)}')`) // Check for overlapping time slots
+          ],
+        },
+      });
+
+      console.log("Conflicting student:", conflictingStudent);
+
+      if (conflictingStudent) {
+        return res.status(409).json({
+          error: 'This seat is already occupied for one or more of the requested time slots.',
+          conflictingStudent: conflictingStudent.toJSON(),
+        });
+      }
+    }
+
+    // Create a new student record in the database
+    const newStudentData = await Student.create({
+      RegistrationNumber,
       AdmissionDate,
       StudentName,
+      FatherName,
       Address,
       ContactNumber,
-      Time,
+      TimeSlots, // Already an array from the frontend
       Shift,
       SeatNumber,
       FeesPaidTillDate,
-      AmountPaid,
-      AmountDue,
+      AmountPaid: parseFloat(AmountPaid),
+      AmountDue: AmountDue ? parseFloat(AmountDue) : null,
       LockerNumber,
     });
 
     // Respond with the newly created student data
     res.status(201).json({
-      message: "Student data added successfully",
-      data: newStudentData,
+      message: 'Student data added successfully',
+      data: newStudentData.toJSON(),
     });
   } catch (error) {
-    console.error("Error adding student data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error adding student data:', error);
+    if (error.name === 'SequelizeValidationError') {
+      const errors = error.errors.map(err => err.message);
+      return res.status(400).json({ error: 'Validation failed', details: errors });
+    } else if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ error: 'Duplicate entry found', field: error.fields });
+    }
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };

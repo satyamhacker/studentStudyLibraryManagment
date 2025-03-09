@@ -7,7 +7,7 @@ const ShowStudentsWithEndedMonth = () => {
   const [expiredStudents, setExpiredStudents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch student data from backend
   useEffect(() => {
@@ -16,22 +16,19 @@ const ShowStudentsWithEndedMonth = () => {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents"); // Adjust the route accordingly
+      const response = await axios.get("http://localhost:3000/getStudents"); // Corrected endpoint
       const studentsData = response.data;
+      console.log("Students data:", studentsData);
 
-      // Filter students whose "month" has ended till the current date
+      // Filter students whose FeesPaidTillDate has passed the current date
       const currentDate = new Date();
       const filteredStudents = studentsData.filter((student) => {
-        const studentDate = new Date(student.FeesPaidTillDate); // Assuming 'FeesPaidTillDate' is the reference date
-        const oneMonthAgo = new Date(currentDate);
-        oneMonthAgo.setMonth(currentDate.getMonth() - 1); // Calculate one month ago from today
-
-        // Check if the student's date is earlier than one month ago
-        return studentDate < oneMonthAgo;
+        const feesPaidTillDate = new Date(student.FeesPaidTillDate);
+        return feesPaidTillDate < currentDate; // Show students whose fee period has ended as of today
       });
 
-      setStudents(studentsData); // Store all student data
-      setExpiredStudents(filteredStudents); // Store only expired students
+      setStudents(studentsData);
+      setExpiredStudents(filteredStudents);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
@@ -59,10 +56,18 @@ const ShowStudentsWithEndedMonth = () => {
     student.StudentName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return isNaN(date.getTime())
+      ? "Invalid Date"
+      : date.toLocaleDateString("en-US");
+  };
+
   return (
     <Container>
       <h2 className="bg-yellow-200 my-9">
-        Students with Ended Month Till Current Date----:{" "}
+        Students with Fees Due as of:{" "}
         {new Date().toLocaleDateString("en-US", {
           year: "numeric",
           month: "long",
@@ -80,17 +85,17 @@ const ShowStudentsWithEndedMonth = () => {
           marginBottom: "20px",
           padding: "10px",
           width: "100%",
-          border: "2px solid #007bff", // Set border color
-          borderRadius: "5px", // Rounded corners
-          outline: "none", // Remove default outline
-          boxShadow: "0 0 5px rgba(0, 123, 255, 0.5)", // Optional shadow effect
+          border: "2px solid #007bff",
+          borderRadius: "5px",
+          outline: "none",
+          boxShadow: "0 0 5px rgba(0, 123, 255, 0.5)",
         }}
       />
 
       <Row>
         {filteredExpiredStudents.length > 0 ? (
-          filteredExpiredStudents.map((student, index) => (
-            <Col key={index} xs={12} className="my-2">
+          filteredExpiredStudents.map((student) => (
+            <Col key={student.id} xs={12} className="my-2">
               <div
                 onClick={() => handleStudentClick(student)}
                 style={{
@@ -101,16 +106,16 @@ const ShowStudentsWithEndedMonth = () => {
                 }}
               >
                 <strong>Name:</strong> {student.StudentName} <br />
-                <strong>Admission Number:</strong> {student.AdmissionNumber}{" "}
-                <br />
+                <strong>Registration Number:</strong>{" "}
+                {student.RegistrationNumber} <br />
                 <strong>Date of Admission:</strong>{" "}
-                {new Date(student.AdmissionDate).toLocaleDateString("en-US")}
+                {formatDate(student.AdmissionDate)}
               </div>
             </Col>
           ))
         ) : (
           <Col xs={12}>
-            <p>No students have ended their month yet.</p>
+            <p>No students have fees due as of today.</p>
           </Col>
         )}
       </Row>
@@ -124,17 +129,18 @@ const ShowStudentsWithEndedMonth = () => {
           {selectedStudent && (
             <div>
               <p>
-                <strong>Admission Number:</strong>{" "}
-                {selectedStudent.AdmissionNumber}
+                <strong>Registration Number:</strong>{" "}
+                {selectedStudent.RegistrationNumber}
               </p>
               <p>
                 <strong>Date of Admission:</strong>{" "}
-                {new Date(selectedStudent.AdmissionDate).toLocaleDateString(
-                  "en-US"
-                )}
+                {formatDate(selectedStudent.AdmissionDate)}
               </p>
               <p>
                 <strong>Name:</strong> {selectedStudent.StudentName}
+              </p>
+              <p>
+                <strong>Father's Name:</strong> {selectedStudent.FatherName}
               </p>
               <p>
                 <strong>Address:</strong> {selectedStudent.Address}
@@ -143,10 +149,14 @@ const ShowStudentsWithEndedMonth = () => {
                 <strong>Contact Number:</strong> {selectedStudent.ContactNumber}
               </p>
               <p>
-                <strong>Time:</strong> {selectedStudent.Time}
+                <strong>Time Slots:</strong>{" "}
+                {selectedStudent.TimeSlots.join(", ")}
               </p>
               <p>
                 <strong>Shift:</strong> {selectedStudent.Shift}
+              </p>
+              <p>
+                <strong>Seat Number:</strong> {selectedStudent.SeatNumber}
               </p>
               <p>
                 <strong>Locker Number:</strong> {selectedStudent.LockerNumber}
@@ -155,19 +165,17 @@ const ShowStudentsWithEndedMonth = () => {
                 <strong>Amount Paid:</strong> ₹{selectedStudent.AmountPaid}
               </p>
               <p>
-                <strong>Amount Due:</strong> ₹{selectedStudent.AmountDue}
+                <strong>Amount Due:</strong> ₹{selectedStudent.AmountDue || "0"}
               </p>
               <p>
                 <strong>Fees Paid Till Date:</strong>{" "}
-                {new Date(selectedStudent.FeesPaidTillDate).toLocaleDateString(
-                  "en-US"
-                )}
+                {formatDate(selectedStudent.FeesPaidTillDate)}
               </p>
             </div>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button className="bg-black" onClick={handleCloseModal}>
+          <Button className="bg-black text-white" onClick={handleCloseModal}>
             Close
           </Button>
         </Modal.Footer>
