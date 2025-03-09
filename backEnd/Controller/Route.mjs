@@ -7,6 +7,7 @@ import {
   fetchStudentsData,
   deleteStudentData,
   updateStudentData,
+  exportStudentDataToExcel, // Import the new controller
 } from "./index.Controller.mjs"; // Import your signupLogin controller
 
 const app = express(); // Create an Express app
@@ -27,6 +28,8 @@ app.get("/getStudents", fetchStudentsData);
 app.delete("/deleteStudent/:id", deleteStudentData);
 
 app.put("/updateStudent/:id", updateStudentData);
+
+app.get("/exportStudents", exportStudentDataToExcel); // Add the new route
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);

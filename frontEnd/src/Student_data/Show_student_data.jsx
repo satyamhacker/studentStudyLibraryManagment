@@ -141,10 +141,27 @@ const ShowStudentData = () => {
     }));
   };
 
+  const exportStudentDataToExcel = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/exportStudents", {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "students_data.xlsx");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error exporting student data:", error);
+      alert("Error exporting student data");
+    }
+  };
+
   return (
     <Container>
       <Row>
-        <Col md={8}>
+        <Col md={8} className="w-1/4">
           <h1 className="bg-blue-700 text-white p-2">All Students Data</h1>
         </Col>
         <Col md={4}>
@@ -156,10 +173,15 @@ const ShowStudentData = () => {
               onChange={handleSearch}
               className="border-2 border-blue-500"
             />
-            <IconButton>
-              <SearchIcon />
-            </IconButton>
           </Form>
+        </Col>
+        <Col md={12} className="text-right mb-3">
+          <Button
+            className="bg-pink-500 text-white"
+            onClick={exportStudentDataToExcel}
+          >
+            Export Student Data to Excel
+          </Button>
         </Col>
       </Row>
 
