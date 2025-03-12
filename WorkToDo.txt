@@ -1,6 +1,11 @@
 
 ======Note for this project==========
 
+===problem========
+
+
+==================================================================
+
 1.There can be users who don't have locker for them in locker input box give 0...
 2.There can be few students whose seat is not fixed so give 0 in seatNumber for them and it will work ...
 

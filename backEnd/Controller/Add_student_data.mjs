@@ -35,6 +35,7 @@ export const addStudentData = async (req, res) => {
       return res.status(400).json({ error: 'All required fields must be provided and TimeSlots must be a non-empty array' });
     }
 
+
     // Check if RegistrationNumber or ContactNumber already exists
     const existingStudent = await Student.findOne({
       where: {
@@ -78,6 +79,23 @@ export const addStudentData = async (req, res) => {
         return res.status(409).json({
           error: 'This seat is already occupied for one or more of the requested time slots.',
           conflictingStudent: conflictingStudent.toJSON(),
+        });
+      }
+    }
+
+
+    // Check if LockerNumber is already assigned to another student
+    if (LockerNumber) {
+      const existingLocker = await Student.findOne({
+        where: {
+          LockerNumber,
+        },
+      });
+
+      if (existingLocker) {
+        return res.status(409).json({
+          error: 'This locker is already assigned to another student.',
+          assignedTo: existingLocker.StudentName,
         });
       }
     }

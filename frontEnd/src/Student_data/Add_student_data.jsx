@@ -151,13 +151,20 @@ const AddStudent = () => {
       });
       setErrors({});
     } catch (error) {
+      console.error("Error:", error);
       if (error.response?.status === 409) {
-        const { conflictingStudent } = error.response.data;
-        alert(
-          `Seat ${studentData.SeatNumber} is occupied by ${
-            conflictingStudent.StudentName
-          } for time slots: ${conflictingStudent.TimeSlots.join(", ")}`
-        );
+        const { conflictingStudent, assignedTo } = error.response.data;
+        if (conflictingStudent) {
+          alert(
+            `Seat ${studentData.SeatNumber} is occupied by ${
+              conflictingStudent.StudentName
+            } for time slots: ${conflictingStudent.TimeSlots.join(", ")}`
+          );
+        } else if (assignedTo) {
+          alert(
+            `Locker ${studentData.LockerNumber} is already assigned to ${assignedTo}`
+          );
+        }
       } else {
         const errorMessage =
           error.response?.data?.error || "Error adding student data";

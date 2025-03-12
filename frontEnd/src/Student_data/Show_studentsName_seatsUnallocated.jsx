@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Modal, Button } from "react-bootstrap";
+import { Container, Row, Col, Modal, Button, Card } from "react-bootstrap";
 import axios from "axios";
 
 const ShowVacantSeats = () => {
   const [occupiedSeats, setOccupiedSeats] = useState([]);
   const [students, setStudents] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedStudents, setSelectedStudents] = useState([]);
 
   // Fetch occupied seat data from backend
   useEffect(() => {
@@ -38,12 +38,14 @@ const ShowVacantSeats = () => {
 
   // Handle seat click to show modal
   const handleSeatClick = (seatNumber) => {
+    console.log("Seat clicked:", students);
     // Convert seatNumber to string for comparison with SeatNumber
-    const student = students.find(
+    const selectedStudents = students.filter(
       (s) => s.SeatNumber === seatNumber.toString()
     );
-    if (student) {
-      setSelectedStudent(student);
+    if (selectedStudents.length > 0) {
+      console.log("Selected students:", selectedStudents);
+      setSelectedStudents(selectedStudents);
       setShowModal(true);
     } else {
       console.log(`No student found for seat number: ${seatNumber}`);
@@ -53,7 +55,7 @@ const ShowVacantSeats = () => {
   // Close the modal
   const handleCloseModal = () => {
     setShowModal(false);
-    setSelectedStudent(null);
+    setSelectedStudents([]);
   };
 
   // Format date for display
@@ -110,53 +112,54 @@ const ShowVacantSeats = () => {
           <Modal.Title>Student Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedStudent && (
-            <div>
-              <p>
-                <strong>Registration Number:</strong>{" "}
-                {selectedStudent.RegistrationNumber}
-              </p>
-              <p>
-                <strong>Date Of Admission:</strong>{" "}
-                {formatDate(selectedStudent.AdmissionDate)}
-              </p>
-              <p>
-                <strong>Name:</strong> {selectedStudent.StudentName}
-              </p>
-              <p>
-                <strong>Father's Name:</strong> {selectedStudent.FatherName}
-              </p>
-              <p>
-                <strong>Address:</strong> {selectedStudent.Address}
-              </p>
-              <p>
-                <strong>Contact Number:</strong> {selectedStudent.ContactNumber}
-              </p>
-              <p>
-                <strong>Time Slots:</strong>{" "}
-                {selectedStudent.TimeSlots.join(", ")}
-              </p>
-              <p>
-                <strong>Shift:</strong> {selectedStudent.Shift}
-              </p>
-              <p>
-                <strong>Seat Number:</strong> {selectedStudent.SeatNumber}
-              </p>
-              <p>
-                <strong>Amount Paid:</strong> ₹{selectedStudent.AmountPaid}
-              </p>
-              <p>
-                <strong>Amount Due:</strong> ₹{selectedStudent.AmountDue || "0"}
-              </p>
-              <p>
-                <strong>Locker Number:</strong> {selectedStudent.LockerNumber}
-              </p>
-              <p>
-                <strong>Fees Paid Till Date:</strong>{" "}
-                {formatDate(selectedStudent.FeesPaidTillDate)}
-              </p>
-            </div>
-          )}
+          {selectedStudents.map((student, index) => (
+            <Card key={index} className="mb-3">
+              <Card.Body>
+                <Card.Title>{student.StudentName}</Card.Title>
+                <Card.Text>
+                  <p>
+                    <strong>Registration Number:</strong>{" "}
+                    {student.RegistrationNumber}
+                  </p>
+                  <p>
+                    <strong>Date Of Admission:</strong>{" "}
+                    {formatDate(student.AdmissionDate)}
+                  </p>
+                  <p>
+                    <strong>Father's Name:</strong> {student.FatherName}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {student.Address}
+                  </p>
+                  <p>
+                    <strong>Contact Number:</strong> {student.ContactNumber}
+                  </p>
+                  <p>
+                    <strong>Time Slots:</strong> {student.TimeSlots.join(", ")}
+                  </p>
+                  <p>
+                    <strong>Shift:</strong> {student.Shift}
+                  </p>
+                  <p>
+                    <strong>Seat Number:</strong> {student.SeatNumber}
+                  </p>
+                  <p>
+                    <strong>Amount Paid:</strong> ₹{student.AmountPaid}
+                  </p>
+                  <p>
+                    <strong>Amount Due:</strong> ₹{student.AmountDue || "0"}
+                  </p>
+                  <p>
+                    <strong>Locker Number:</strong> {student.LockerNumber}
+                  </p>
+                  <p>
+                    <strong>Fees Paid Till Date:</strong>{" "}
+                    {formatDate(student.FeesPaidTillDate)}
+                  </p>
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          ))}
         </Modal.Body>
         <Modal.Footer>
           <Button className="bg-black text-white" onClick={handleCloseModal}>
