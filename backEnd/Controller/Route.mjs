@@ -12,8 +12,14 @@ import {
 
 import { VerifyUserJwt } from '../Middleware/Jwt.mjs'; // Import the VerifyUserJwt middleware
 
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config({ path: '../.env' });
+
+
 const app = express(); // Create an Express app
-const port = 3000; // Port number on which your server will run
+const port = process.env.SERVER_PORT; // Port number on which your server will run
 
 app.use(cors()); // Enable CORS for all routes
 

@@ -1,7 +1,13 @@
 import jwt from "jsonwebtoken";
 
-// Replace 'your_secret_key' with your actual secret key
-const secretKey = "Satyam";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config({ path: '../.env' });
+
+// Get the secret key from environment variables
+const secretKey = process.env.SECRET_KEY;
+
 
 // Function to encode user JWT
 export const EncodeUserJwt = (email) => {

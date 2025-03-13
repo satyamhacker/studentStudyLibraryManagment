@@ -16,11 +16,14 @@ const UnallocatedStudentsSeat = () => {
   const fetchStudentData = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      const response = await axios.get("http://localhost:3000/getStudents", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       console.log("Response data:", response.data);
       const unallocatedStudents = response.data.filter(
         (student) => student.SeatNumber === "0" // Filter for SeatNumber "0"

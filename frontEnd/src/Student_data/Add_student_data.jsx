@@ -129,7 +129,7 @@ const AddStudent = () => {
       const token = localStorage.getItem("jwtToken");
 
       const response = await axios.post(
-        "http://localhost:3000/addStudent",
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/addStudent`,
         formattedData,
         {
           headers: {

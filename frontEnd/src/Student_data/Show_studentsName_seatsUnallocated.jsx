@@ -17,11 +17,14 @@ const ShowVacantSeats = () => {
   const fetchOccupiedSeats = async () => {
     try {
       const token = localStorage.getItem("jwtToken"); // Retrieve token from localStorage
-      const response = await axios.get("http://localhost:3000/getStudents", {
-        headers: {
-          Authorization: `Bearer ${token}`, // Send token in Authorization header
-        },
-      }); // API endpoint unchanged
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token in Authorization header
+          },
+        }
+      ); // API endpoint unchanged
       setStudents(response.data);
       console.log("Students data:", response.data);
 
