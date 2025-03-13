@@ -17,9 +17,14 @@ const ShowStudentsWithEndedMonth = () => {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents"); // API endpoint unchanged
+      const token = localStorage.getItem("jwtToken"); // Retrieve token from localStorage
+      const response = await axios.get("http://localhost:3000/getStudents", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Send token in Authorization header
+        },
+      }); // API endpoint unchanged
       const studentsData = response.data;
-      console.log("Students data:", studentsData);
+      // console.log("Students data:", studentsData);
 
       // Filter students whose FeesPaidTillDate has passed the current date
       const currentDate = new Date();

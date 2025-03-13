@@ -41,7 +41,12 @@ const ShowStudentData = () => {
 
   const fetchStudentData = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents");
+      const token = localStorage.getItem("jwtToken");
+      const response = await axios.get("http://localhost:3000/getStudents", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.data.length === 0) {
         alert("Please add Student data.");
         navigate("/addStudent");
@@ -55,7 +60,12 @@ const ShowStudentData = () => {
 
   const deleteStudent = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/deleteStudent/${id}`);
+      const token = localStorage.getItem("jwtToken");
+      await axios.delete(`http://localhost:3000/deleteStudent/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       fetchStudentData();
       setShowDeleteModal(false);
     } catch (error) {
@@ -81,9 +91,15 @@ const ShowStudentData = () => {
         return;
       }
 
+      const token = localStorage.getItem("jwtToken");
       await axios.put(
         `http://localhost:3000/updateStudent/${currentStudent.id}`,
-        currentStudent
+        currentStudent,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setShowEditModal(false);
       fetchStudentData();
@@ -132,7 +148,11 @@ const ShowStudentData = () => {
 
   const exportStudentDataToExcel = async () => {
     try {
+      const token = localStorage.getItem("jwtToken");
       const response = await axios.get("http://localhost:3000/exportStudents", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         responseType: "blob",
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));

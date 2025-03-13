@@ -43,7 +43,3 @@ const ContextData = (props) => {
 };
 
 export default ContextData;
-
-///jwt token
-//is_premium;
-//total_amount

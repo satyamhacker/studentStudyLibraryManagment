@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Table, Container, Row, Col } from "react-bootstrap";
+import { Table, Container, Row, Col, Form } from "react-bootstrap";
 import axios from "axios";
+import "../styles/neonUnallocated.css"; // Custom CSS file for neon effects
 
 const UnallocatedStudentsSeat = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
 
   // Fetch student data from backend
   useEffect(() => {
@@ -13,7 +15,12 @@ const UnallocatedStudentsSeat = () => {
 
   const fetchStudentData = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents"); // Corrected endpoint
+      const token = localStorage.getItem("jwtToken");
+      const response = await axios.get("http://localhost:3000/getStudents", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log("Response data:", response.data);
       const unallocatedStudents = response.data.filter(
         (student) => student.SeatNumber === "0" // Filter for SeatNumber "0"
@@ -31,6 +38,20 @@ const UnallocatedStudentsSeat = () => {
     }
   };
 
+  // Handle search functionality
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // Filter students based on search term
+  const filteredStudents = students.filter((student) =>
+    Object.values(student).some((value) =>
+      value
+        ? value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        : false
+    )
+  );
+
   // Format date for display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -40,52 +61,71 @@ const UnallocatedStudentsSeat = () => {
   };
 
   return (
-    <Container>
-      <Row>
+    <Container className="mt-5">
+      <Row className="mb-3">
         <Col>
-          <h1 className="bg-green-600 text-white p-2">
+          <h1 className="neon-header text-center">
             Students Without Seat Allocation
           </h1>
         </Col>
       </Row>
 
+      {/* Search Box */}
+      <Row className="mb-4">
+        <Col>
+          <Form>
+            <Form.Control
+              type="text"
+              placeholder="Search by any field..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="neon-input w-100"
+            />
+          </Form>
+        </Col>
+      </Row>
+
       {loading ? (
-        <p>Loading...</p>
-      ) : students.length === 0 ? (
-        <p>No students are currently unallocated (Seat Number: 0).</p>
+        <p className="neon-loading text-center">Loading...</p>
+      ) : filteredStudents.length === 0 ? (
+        <p className="text-center">
+          No students are currently unallocated (Seat Number: 0).
+        </p>
       ) : (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Registration Number</th>
-              <th>Admission Date</th>
-              <th>Fees Paid Till</th>
-              <th>Student Name</th>
-              <th>Father's Name</th>
-              <th>Address</th>
-              <th>Contact Number</th>
-              <th>Time Slots</th>
-              <th>Shift</th>
-              <th>Seat Number</th>
-            </tr>
-          </thead>
-          <tbody>
-            {students.map((student) => (
-              <tr key={student.id}>
-                <td>{student.RegistrationNumber}</td>
-                <td>{formatDate(student.AdmissionDate)}</td>
-                <td>{formatDate(student.FeesPaidTillDate)}</td>
-                <td>{student.StudentName}</td>
-                <td>{student.FatherName}</td>
-                <td>{student.Address}</td>
-                <td>{student.ContactNumber}</td>
-                <td>{student.TimeSlots.join(", ")}</td>
-                <td>{student.Shift}</td>
-                <td>{student.SeatNumber}</td>
+        <div className="neon-table-container">
+          <Table striped bordered hover responsive className="neon-table">
+            <thead>
+              <tr>
+                <th>Registration Number</th>
+                <th>Admission Date</th>
+                <th>Fees Paid Till</th>
+                <th>Student Name</th>
+                <th>Father's Name</th>
+                <th>Address</th>
+                <th>Contact Number</th>
+                <th>Time Slots</th>
+                <th>Shift</th>
+                <th>Seat Number</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {filteredStudents.map((student) => (
+                <tr key={student.id}>
+                  <td>{student.RegistrationNumber}</td>
+                  <td>{formatDate(student.AdmissionDate)}</td>
+                  <td>{formatDate(student.FeesPaidTillDate)}</td>
+                  <td>{student.StudentName}</td>
+                  <td>{student.FatherName}</td>
+                  <td>{student.Address}</td>
+                  <td>{student.ContactNumber}</td>
+                  <td>{student.TimeSlots.join(", ")}</td>
+                  <td>{student.Shift}</td>
+                  <td>{student.SeatNumber}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       )}
     </Container>
   );

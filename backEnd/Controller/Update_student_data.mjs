@@ -1,4 +1,4 @@
-import {Student} from '../Models/modelsImportExport.mjs'; // Adjust path to your Student model
+import { Student } from '../Models/modelsImportExport.mjs'; // Adjust path to your Student model
 
 export const updateStudentData = async (req, res) => {
   const { id } = req.params;
@@ -11,8 +11,11 @@ export const updateStudentData = async (req, res) => {
       return res.status(404).json({ message: 'Student not found' });
     }
 
-    // Update the student with the request body
-    await student.update(req.body);
+    // Exclude RegistrationNumber from the update data
+    const { RegistrationNumber, ...updateData } = req.body;
+
+    // Update the student with the request body, excluding RegistrationNumber
+    await student.update(updateData);
 
     // Fetch the updated student (optional, Sequelize updates in place)
     const updatedStudent = await Student.findByPk(id);

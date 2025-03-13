@@ -16,7 +16,12 @@ const ShowLockers = () => {
 
   const fetchOccupiedLockers = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents"); // API endpoint unchanged
+      const token = localStorage.getItem("jwtToken"); // Retrieve JWT token from localStorage
+      const response = await axios.get("http://localhost:3000/getStudents", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Send JWT token in the Authorization header
+        },
+      }); // API endpoint unchanged
       setStudents(response.data);
 
       const lockerNumbers = response.data

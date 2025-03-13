@@ -125,9 +125,17 @@ const AddStudent = () => {
 
       console.log("Data being sent to backend:", formattedData);
 
+      // Get the JWT token from local storage
+      const token = localStorage.getItem("jwtToken");
+
       const response = await axios.post(
         "http://localhost:3000/addStudent",
-        formattedData
+        formattedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       alert(response.data.message);

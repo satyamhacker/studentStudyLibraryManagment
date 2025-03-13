@@ -37,6 +37,7 @@ export const login = async (req, res) => {
     // Extract data from the request body
     const { email, password } = req.body;
 
+
     const user = await SignupData.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" }); // Unauthorized if user not found

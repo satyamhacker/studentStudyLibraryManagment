@@ -3,8 +3,7 @@
 
 ===problem========
 
-1.Login functionality with jwt authentication should be implemented
-2.all imp theings should be in .env file...
+1.all imp theings should be in .env file...
 
 
 ==================================================================

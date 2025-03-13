@@ -25,6 +25,7 @@ const Login = () => {
 
       // Check if the login was successful based on response structure
       if (response.status === 200 && response.data.length > 0) {
+        console.log("test", response.data[1]);
         const userData = response.data[0]; // Assuming the user data is the first element in the array
         alert("Login successful");
 
@@ -33,7 +34,8 @@ const Login = () => {
         ContextData.logIn();
 
         // Set isLoggedIn to true in local storage
-        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("jwtToken", response.data[1]);
+        localStorage.setItem("isLoggedIn", true);
 
         navigate("/home");
       } else {
