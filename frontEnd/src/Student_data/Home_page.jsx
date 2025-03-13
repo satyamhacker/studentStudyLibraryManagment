@@ -18,41 +18,36 @@ const HomePage = () => {
         highlight: "yellow",
       },
       {
+        text: "SHOW ALL STUDENT DETAILS",
+        route: "/showStudentsData",
+        highlight: "red",
+      },
+      {
         text: "SHOW STUDENTS WITH UNALLOCATED SEATS",
         route: "/unallocatedStudentsSeats",
-        highlight: "red",
+        highlight: "yellow",
       },
       {
         text: "SHOW STUDENTS WITH FEES DUES",
         route: "/studentsWithDues",
-        highlight: "yellow",
-      },
-      {
-        text: "SHOW STUDENTS WHOSE MONTH ENDED",
-        route: "/studentsWithEndedMonth",
         highlight: "yellow",
       },
     ],
     // Right column
     [
       {
-        text: "ADD STUDENT DETAILS",
-        route: "/addStudent",
+        text: "SHOW VACCANT SEATS",
+        route: "/StudentsWithoutAllocatedSeats",
         highlight: "yellow",
-      },
-      {
-        text: "SHOW STUDENTS WITH FEES DUES",
-        route: "/studentsWithDues",
-        highlight: "yellow",
-      },
-      {
-        text: "SHOW STUDENTS WITH LOUIES",
-        route: "/studentsWithLouies",
-        highlight: "red",
       },
       {
         text: "SHOW STUDENTS WITH LOCKER",
         route: "/studentsWithLocker",
+        highlight: "red",
+      },
+      {
+        text: "SHOW STUDENTS Who's Subscription Ends This Month",
+        route: "/studentsWithEndedMonth",
         highlight: "yellow",
       },
     ],

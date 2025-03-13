@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Modal, Button } from "react-bootstrap";
 import axios from "axios";
+import "../styles/neonExpired.css"; // Custom CSS file for neon effects
 
 const ShowStudentsWithEndedMonth = () => {
   const [students, setStudents] = useState([]);
@@ -16,7 +17,7 @@ const ShowStudentsWithEndedMonth = () => {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents"); // Corrected endpoint
+      const response = await axios.get("http://localhost:3000/getStudents"); // API endpoint unchanged
       const studentsData = response.data;
       console.log("Students data:", studentsData);
 
@@ -65,8 +66,8 @@ const ShowStudentsWithEndedMonth = () => {
   };
 
   return (
-    <Container>
-      <h2 className="bg-yellow-200 my-9">
+    <Container className="mt-5">
+      <h2 className="neon-header text-center mb-4">
         Students with Fees Due as of:{" "}
         {new Date().toLocaleDateString("en-US", {
           year: "numeric",
@@ -81,51 +82,48 @@ const ShowStudentsWithEndedMonth = () => {
         placeholder="Search by Student Name"
         value={searchTerm}
         onChange={handleSearchChange}
-        style={{
-          marginBottom: "20px",
-          padding: "10px",
-          width: "100%",
-          border: "2px solid #007bff",
-          borderRadius: "5px",
-          outline: "none",
-          boxShadow: "0 0 5px rgba(0, 123, 255, 0.5)",
-        }}
+        className="neon-input mb-4 w-100"
       />
 
-      <Row>
-        {filteredExpiredStudents.length > 0 ? (
-          filteredExpiredStudents.map((student) => (
-            <Col key={student.id} xs={12} className="my-2">
-              <div
-                onClick={() => handleStudentClick(student)}
-                style={{
-                  border: "1px solid black",
-                  padding: "10px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                <strong>Name:</strong> {student.StudentName} <br />
-                <strong>Registration Number:</strong>{" "}
-                {student.RegistrationNumber} <br />
-                <strong>Date of Admission:</strong>{" "}
-                {formatDate(student.AdmissionDate)}
-              </div>
+      <div className="neon-card-container">
+        <Row>
+          {filteredExpiredStudents.length > 0 ? (
+            filteredExpiredStudents.map((student) => (
+              <Col key={student.id} xs={12} sm={6} md={4} className="my-3">
+                <div
+                  onClick={() => handleStudentClick(student)}
+                  className="neon-card"
+                >
+                  <strong>Name:</strong> {student.StudentName} <br />
+                  <strong>Registration Number:</strong>{" "}
+                  {student.RegistrationNumber} <br />
+                  <strong>Date of Admission:</strong>{" "}
+                  {formatDate(student.AdmissionDate)}
+                </div>
+              </Col>
+            ))
+          ) : (
+            <Col xs={12}>
+              <p className="text-center">
+                No students have fees due as of today.
+              </p>
             </Col>
-          ))
-        ) : (
-          <Col xs={12}>
-            <p>No students have fees due as of today.</p>
-          </Col>
-        )}
-      </Row>
+          )}
+        </Row>
+      </div>
 
       {/* Modal for displaying student details */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        dialogClassName="neon-modal"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Student Details</Modal.Title>
+          <Modal.Title className="neon-modal-title">
+            Student Details
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="neon-modal-body">
           {selectedStudent && (
             <div>
               <p>
@@ -175,7 +173,10 @@ const ShowStudentsWithEndedMonth = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button className="bg-black text-white" onClick={handleCloseModal}>
+          <Button
+            className="neon-button bg-black text-white"
+            onClick={handleCloseModal}
+          >
             Close
           </Button>
         </Modal.Footer>

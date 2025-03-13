@@ -5,6 +5,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
 import PaymentIcon from "@mui/icons-material/Payment";
 import axios from "axios";
+import "../styles/neonForm.css"; // Custom CSS file for neon effects
 
 const AddStudent = () => {
   const [studentData, setStudentData] = useState({
@@ -60,7 +61,6 @@ const AddStudent = () => {
         ...studentData,
         [name]: value,
       });
-      // Clear error when user starts typing
       setErrors({
         ...errors,
         [name]: "",
@@ -93,7 +93,6 @@ const AddStudent = () => {
         key !== "LockerNumber" &&
         key !== "AmountDue"
       ) {
-        // Optional fields
         if (!studentData[key]) {
           newErrors[key] = `${key
             .replace(/([A-Z])/g, " $1")
@@ -176,276 +175,287 @@ const AddStudent = () => {
 
   return (
     <Container className="mt-5">
-      <h2 className="text-center mb-4 bg-green-500">Add Student Details</h2>
-      <Form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow-md">
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Registration Number</Form.Label>
-              <TextField
-                variant="outlined"
-                name="RegistrationNumber"
-                value={studentData.RegistrationNumber}
-                onChange={handleChange}
-                fullWidth
-                required
-                placeholder="Enter Registration Number"
-                error={!!errors.RegistrationNumber}
-                helperText={errors.RegistrationNumber}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Admission Date</Form.Label>
-              <TextField
-                variant="outlined"
-                type="date"
-                name="AdmissionDate"
-                value={studentData.AdmissionDate}
-                onChange={handleChange}
-                fullWidth
-                required
-                error={!!errors.AdmissionDate}
-                helperText={errors.AdmissionDate}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
+      <h2 className="neon-header text-center mb-4">Add Student Details</h2>
+      <div className="neon-form-container">
+        <Form onSubmit={handleSubmit} className="p-4">
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Registration Number</Form.Label>
+                <TextField
+                  variant="outlined"
+                  name="RegistrationNumber"
+                  value={studentData.RegistrationNumber}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  placeholder="Enter Registration Number"
+                  error={!!errors.RegistrationNumber}
+                  helperText={errors.RegistrationNumber}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Admission Date</Form.Label>
+                <TextField
+                  variant="outlined"
+                  type="date"
+                  name="AdmissionDate"
+                  value={studentData.AdmissionDate}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  error={!!errors.AdmissionDate}
+                  helperText={errors.AdmissionDate}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Student Name</Form.Label>
-              <TextField
-                variant="outlined"
-                name="StudentName"
-                value={studentData.StudentName}
-                onChange={handleChange}
-                fullWidth
-                required
-                placeholder="Enter Student Name"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PersonIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                error={!!errors.StudentName}
-                helperText={errors.StudentName}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Father's Name</Form.Label>
-              <TextField
-                variant="outlined"
-                name="FatherName"
-                value={studentData.FatherName}
-                onChange={handleChange}
-                fullWidth
-                required
-                placeholder="Enter Father's Name"
-                error={!!errors.FatherName}
-                helperText={errors.FatherName}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Student Name</Form.Label>
+                <TextField
+                  variant="outlined"
+                  name="StudentName"
+                  value={studentData.StudentName}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  placeholder="Enter Student Name"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PersonIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  error={!!errors.StudentName}
+                  helperText={errors.StudentName}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Father's Name</Form.Label>
+                <TextField
+                  variant="outlined"
+                  name="FatherName"
+                  value={studentData.FatherName}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  placeholder="Enter Father's Name"
+                  error={!!errors.FatherName}
+                  helperText={errors.FatherName}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Address</Form.Label>
-              <TextField
-                variant="outlined"
-                name="Address"
-                value={studentData.Address}
-                onChange={handleChange}
-                fullWidth
-                required
-                placeholder="Enter Address"
-                error={!!errors.Address}
-                helperText={errors.Address}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Contact Number</Form.Label>
-              <TextField
-                variant="outlined"
-                name="ContactNumber"
-                value={studentData.ContactNumber}
-                onChange={handleChange}
-                fullWidth
-                required
-                placeholder="Enter Contact Number"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <ContactPhoneIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                error={!!errors.ContactNumber}
-                helperText={errors.ContactNumber}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Address</Form.Label>
+                <TextField
+                  variant="outlined"
+                  name="Address"
+                  value={studentData.Address}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  placeholder="Enter Address"
+                  error={!!errors.Address}
+                  helperText={errors.Address}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Contact Number</Form.Label>
+                <TextField
+                  variant="outlined"
+                  name="ContactNumber"
+                  value={studentData.ContactNumber}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  placeholder="Enter Contact Number"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <ContactPhoneIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  error={!!errors.ContactNumber}
+                  helperText={errors.ContactNumber}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Time Slots</Form.Label>
-              <TextField
-                select
-                variant="outlined"
-                name="TimeSlots"
-                value={studentData.TimeSlots}
-                onChange={handleTimeChange}
-                fullWidth
-                required
-                SelectProps={{
-                  multiple: true,
-                }}
-                error={!!errors.TimeSlots}
-                helperText={errors.TimeSlots}
-              >
-                {timeOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Shift</Form.Label>
-              <TextField
-                variant="outlined"
-                name="Shift"
-                value={studentData.Shift}
-                onChange={handleChange}
-                fullWidth
-                required
-                placeholder="Enter Shift"
-                error={!!errors.Shift}
-                helperText={errors.Shift}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Time Slots</Form.Label>
+                <TextField
+                  select
+                  variant="outlined"
+                  name="TimeSlots"
+                  value={studentData.TimeSlots}
+                  onChange={handleTimeChange}
+                  fullWidth
+                  required
+                  SelectProps={{
+                    multiple: true,
+                  }}
+                  error={!!errors.TimeSlots}
+                  helperText={errors.TimeSlots}
+                  className="neon-input"
+                >
+                  {timeOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Shift</Form.Label>
+                <TextField
+                  variant="outlined"
+                  name="Shift"
+                  value={studentData.Shift}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  placeholder="Enter Shift"
+                  error={!!errors.Shift}
+                  helperText={errors.Shift}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Seat Number</Form.Label>
-              <TextField
-                variant="outlined"
-                name="SeatNumber"
-                value={studentData.SeatNumber}
-                onChange={handleChange}
-                fullWidth
-                placeholder="Enter Seat Number"
-                error={!!errors.SeatNumber}
-                helperText={errors.SeatNumber}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Locker Number</Form.Label>
-              <TextField
-                variant="outlined"
-                name="LockerNumber"
-                value={studentData.LockerNumber}
-                onChange={handleChange}
-                fullWidth
-                placeholder="Enter Locker Number"
-                error={!!errors.LockerNumber}
-                helperText={errors.LockerNumber}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Seat Number</Form.Label>
+                <TextField
+                  variant="outlined"
+                  name="SeatNumber"
+                  value={studentData.SeatNumber}
+                  onChange={handleChange}
+                  fullWidth
+                  placeholder="Enter Seat Number"
+                  error={!!errors.SeatNumber}
+                  helperText={errors.SeatNumber}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Locker Number</Form.Label>
+                <TextField
+                  variant="outlined"
+                  name="LockerNumber"
+                  value={studentData.LockerNumber}
+                  onChange={handleChange}
+                  fullWidth
+                  placeholder="Enter Locker Number"
+                  error={!!errors.LockerNumber}
+                  helperText={errors.LockerNumber}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Row>
-          <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label>Fees Paid Till Date</Form.Label>
-              <TextField
-                variant="outlined"
-                type="date"
-                name="FeesPaidTillDate"
-                value={studentData.FeesPaidTillDate}
-                onChange={handleChange}
-                fullWidth
-                required
-                error={!!errors.FeesPaidTillDate}
-                helperText={errors.FeesPaidTillDate}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Fees Paid Till Date</Form.Label>
+                <TextField
+                  variant="outlined"
+                  type="date"
+                  name="FeesPaidTillDate"
+                  value={studentData.FeesPaidTillDate}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  error={!!errors.FeesPaidTillDate}
+                  helperText={errors.FeesPaidTillDate}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Amount Paid</Form.Label>
-          <TextField
-            variant="outlined"
-            name="AmountPaid"
-            value={studentData.AmountPaid}
-            onChange={handleChange}
-            fullWidth
-            required
-            placeholder="Enter Amount Paid"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <PaymentIcon />
-                  <span className="mr-2">₹</span>
-                </InputAdornment>
-              ),
-            }}
-            error={!!errors.AmountPaid}
-            helperText={errors.AmountPaid}
-          />
-        </Form.Group>
+          <Form.Group className="mb-4">
+            <Form.Label>Amount Paid</Form.Label>
+            <TextField
+              variant="outlined"
+              name="AmountPaid"
+              value={studentData.AmountPaid}
+              onChange={handleChange}
+              fullWidth
+              required
+              placeholder="Enter Amount Paid"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PaymentIcon />
+                    <span className="mr-2">₹</span>
+                  </InputAdornment>
+                ),
+              }}
+              error={!!errors.AmountPaid}
+              helperText={errors.AmountPaid}
+              className="neon-input"
+            />
+          </Form.Group>
 
-        <Form.Group className="mb-3">
-          <Form.Label>Amount Due</Form.Label>
-          <TextField
-            variant="outlined"
-            name="AmountDue"
-            value={studentData.AmountDue}
-            onChange={handleChange}
-            fullWidth
-            placeholder="Enter Amount Due"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <PaymentIcon />
-                  <span className="mr-2">₹</span>
-                </InputAdornment>
-              ),
-            }}
-            error={!!errors.AmountDue}
-            helperText={errors.AmountDue}
-          />
-        </Form.Group>
+          <Form.Group className="mb-4">
+            <Form.Label>Amount Due</Form.Label>
+            <TextField
+              variant="outlined"
+              name="AmountDue"
+              value={studentData.AmountDue}
+              onChange={handleChange}
+              fullWidth
+              placeholder="Enter Amount Due"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PaymentIcon />
+                    <span className="mr-2">₹</span>
+                  </InputAdornment>
+                ),
+              }}
+              error={!!errors.AmountDue}
+              helperText={errors.AmountDue}
+              className="neon-input"
+            />
+          </Form.Group>
 
-        <Button
-          variant="primary"
-          type="submit"
-          className="w-full bg-blue-500 text-white"
-        >
-          Submit
-        </Button>
-      </Form>
+          <Button variant="primary" type="submit" className="neon-button w-100">
+            Submit
+          </Button>
+        </Form>
+      </div>
     </Container>
   );
 };

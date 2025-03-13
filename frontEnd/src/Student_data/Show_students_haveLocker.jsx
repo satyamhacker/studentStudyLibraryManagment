@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Modal, Button } from "react-bootstrap";
 import axios from "axios";
+import "../styles/neonLockers.css"; // Custom CSS file for neon effects
 
 const ShowLockers = () => {
   const [occupiedLockers, setOccupiedLockers] = useState([]);
@@ -15,14 +16,13 @@ const ShowLockers = () => {
 
   const fetchOccupiedLockers = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents"); // Updated endpoint
-      setStudents(response.data); // Store all student data
+      const response = await axios.get("http://localhost:3000/getStudents"); // API endpoint unchanged
+      setStudents(response.data);
 
-      // Extract locker numbers from students data
       const lockerNumbers = response.data
         .map((student) => student.LockerNumber)
-        .filter((locker) => locker !== null && locker !== undefined) // Filter out null or undefined LockerNumbers
-        .map((locker) => locker.toString()); // Ensure all are strings
+        .filter((locker) => locker !== null && locker !== undefined)
+        .map((locker) => locker.toString());
 
       setOccupiedLockers(lockerNumbers);
       console.log("Occupied lockers from server:", lockerNumbers);
@@ -37,7 +37,6 @@ const ShowLockers = () => {
 
   // Handle locker click to show modal
   const handleLockerClick = (lockerNumber) => {
-    // Convert lockerNumber to string for comparison
     const student = students.find(
       (s) => s.LockerNumber === lockerNumber.toString()
     );
@@ -62,52 +61,48 @@ const ShowLockers = () => {
   };
 
   return (
-    <Container>
-      <h2 className="bg-yellow-300 my-4">Locker Allocation</h2>
-      <Row>
-        {lockers.map((lockerNumber) => (
-          <Col
-            key={lockerNumber}
-            xs={3}
-            className="d-flex justify-content-center align-items-center"
-          >
-            <div
-              onClick={() =>
-                occupiedLockers.includes(lockerNumber.toString()) &&
-                handleLockerClick(lockerNumber)
-              }
-              style={{
-                width: "50px",
-                height: "50px",
-                backgroundColor: occupiedLockers.includes(
-                  lockerNumber.toString()
-                )
-                  ? "green"
-                  : "white",
-                border: "1px solid black",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: "5px",
-                margin: "5px",
-                cursor: occupiedLockers.includes(lockerNumber.toString())
-                  ? "pointer"
-                  : "default",
-                transition: "background-color 0.3s",
-              }}
+    <Container className="mt-5">
+      <h2 className="neon-header text-center mb-4">Locker Allocation</h2>
+      <div className="neon-locker-container">
+        <Row>
+          {lockers.map((lockerNumber) => (
+            <Col
+              key={lockerNumber}
+              xs={3}
+              sm={2}
+              md={1}
+              className="d-flex justify-content-center align-items-center mb-3"
             >
-              {lockerNumber}
-            </div>
-          </Col>
-        ))}
-      </Row>
+              <div
+                onClick={() =>
+                  occupiedLockers.includes(lockerNumber.toString()) &&
+                  handleLockerClick(lockerNumber)
+                }
+                className={`neon-locker ${
+                  occupiedLockers.includes(lockerNumber.toString())
+                    ? "occupied"
+                    : "unoccupied"
+                }`}
+              >
+                {lockerNumber}
+              </div>
+            </Col>
+          ))}
+        </Row>
+      </div>
 
       {/* Modal for displaying student details */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        dialogClassName="neon-modal"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Student Details</Modal.Title>
+          <Modal.Title className="neon-modal-title">
+            Student Details
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="neon-modal-body">
           {selectedStudent && (
             <div>
               <p>
@@ -157,7 +152,10 @@ const ShowLockers = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button className="bg-black text-white" onClick={handleCloseModal}>
+          <Button
+            className="neon-button bg-black text-white"
+            onClick={handleCloseModal}
+          >
             Close
           </Button>
         </Modal.Footer>

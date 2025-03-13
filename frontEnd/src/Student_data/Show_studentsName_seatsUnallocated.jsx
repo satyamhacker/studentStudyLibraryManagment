@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Modal, Button, Card } from "react-bootstrap";
 import axios from "axios";
+import "../styles/neonSeats.css"; // Custom CSS file for neon effects
 
 const ShowVacantSeats = () => {
   const [occupiedSeats, setOccupiedSeats] = useState([]);
@@ -15,15 +16,15 @@ const ShowVacantSeats = () => {
 
   const fetchOccupiedSeats = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents"); // Updated endpoint
-      setStudents(response.data); // Store all student data
+      const response = await axios.get("http://localhost:3000/getStudents"); // API endpoint unchanged
+      setStudents(response.data);
       console.log("Students data:", response.data);
 
       // Ensure that SeatNumber is treated as a string
       const seatNumbers = response.data
         .map((student) => student.SeatNumber)
-        .filter((seat) => seat !== null && seat !== undefined) // Filter out null or undefined SeatNumbers
-        .map((seat) => seat.toString()); // Convert to strings
+        .filter((seat) => seat !== null && seat !== undefined)
+        .map((seat) => seat.toString());
 
       setOccupiedSeats(seatNumbers);
       console.log("Occupied seats from server:", seatNumbers);
@@ -32,14 +33,13 @@ const ShowVacantSeats = () => {
     }
   };
 
-  // Create an array of seat numbers from 1 to 82
+  // Create an array of seat numbers from 1 to 100
   const totalSeats = 100;
   const seats = Array.from({ length: totalSeats }, (_, index) => index + 1);
 
   // Handle seat click to show modal
   const handleSeatClick = (seatNumber) => {
     console.log("Seat clicked:", students);
-    // Convert seatNumber to string for comparison with SeatNumber
     const selectedStudents = students.filter(
       (s) => s.SeatNumber === seatNumber.toString()
     );
@@ -67,56 +67,56 @@ const ShowVacantSeats = () => {
   };
 
   return (
-    <Container>
-      <h2 className="bg-yellow-300 my-4">Seat Allocation List</h2>
-      <Row>
-        {seats.map((seatNumber) => (
-          <Col
-            key={seatNumber}
-            xs={3}
-            className="d-flex justify-content-center align-items-center"
-          >
-            <div
-              onClick={() => {
-                if (occupiedSeats.includes(seatNumber.toString())) {
-                  handleSeatClick(seatNumber);
-                }
-              }}
-              style={{
-                width: "50px",
-                height: "50px",
-                backgroundColor: occupiedSeats.includes(seatNumber.toString())
-                  ? "green"
-                  : "white",
-                border: "1px solid black",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: "5px",
-                margin: "5px",
-                cursor: occupiedSeats.includes(seatNumber.toString())
-                  ? "pointer"
-                  : "default",
-                transition: "background-color 0.3s",
-              }}
+    <Container className="mt-5">
+      <h2 className="neon-header text-center mb-4">Seat Allocation List</h2>
+      <div className="neon-seat-container">
+        <Row>
+          {seats.map((seatNumber) => (
+            <Col
+              key={seatNumber}
+              xs={3}
+              sm={2}
+              md={1}
+              className="d-flex justify-content-center align-items-center mb-3"
             >
-              {seatNumber}
-            </div>
-          </Col>
-        ))}
-      </Row>
+              <div
+                onClick={() => {
+                  if (occupiedSeats.includes(seatNumber.toString())) {
+                    handleSeatClick(seatNumber);
+                  }
+                }}
+                className={`neon-seat ${
+                  occupiedSeats.includes(seatNumber.toString())
+                    ? "occupied"
+                    : "vacant"
+                }`}
+              >
+                {seatNumber}
+              </div>
+            </Col>
+          ))}
+        </Row>
+      </div>
 
       {/* Modal for displaying student details */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        dialogClassName="neon-modal"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Student Details</Modal.Title>
+          <Modal.Title className="neon-modal-title">
+            Student Details
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="neon-modal-body">
           {selectedStudents.map((student, index) => (
-            <Card key={index} className="mb-3">
+            <Card key={index} className="neon-card mb-3">
               <Card.Body>
-                <Card.Title>{student.StudentName}</Card.Title>
-                <Card.Text>
+                <Card.Title className="neon-card-title">
+                  {student.StudentName}
+                </Card.Title>
+                <Card.Text className="neon-card-text">
                   <p>
                     <strong>Registration Number:</strong>{" "}
                     {student.RegistrationNumber}
@@ -162,7 +162,10 @@ const ShowVacantSeats = () => {
           ))}
         </Modal.Body>
         <Modal.Footer>
-          <Button className="bg-black text-white" onClick={handleCloseModal}>
+          <Button
+            className="neon-button bg-black text-white"
+            onClick={handleCloseModal}
+          >
             Close
           </Button>
         </Modal.Footer>
