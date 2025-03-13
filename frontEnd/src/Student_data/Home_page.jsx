@@ -1,111 +1,108 @@
 import React from "react";
-import { Container, Button, Row, Col } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "../styles/neonButton.css"; // Assuming this path is correct
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import "../styles/neonButton.css";
 
 const HomePage = () => {
   const navigate = useNavigate();
 
-  // Function to generate a random color
-  const getRandomColor = () => {
-    const letters = "0123456789ABCDEF";
-    let color = "#";
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  };
+  // Button data structured as two columns to match the screenshot
+  const buttons = [
+    // Left column
+    [
+      {
+        text: "ADD STUDENT DETAILS",
+        route: "/addStudent",
+        highlight: "yellow",
+      },
+      {
+        text: "SHOW STUDENTS WITH UNALLOCATED SEATS",
+        route: "/unallocatedStudentsSeats",
+        highlight: "red",
+      },
+      {
+        text: "SHOW STUDENTS WITH FEES DUES",
+        route: "/studentsWithDues",
+        highlight: "yellow",
+      },
+      {
+        text: "SHOW STUDENTS WHOSE MONTH ENDED",
+        route: "/studentsWithEndedMonth",
+        highlight: "yellow",
+      },
+    ],
+    // Right column
+    [
+      {
+        text: "ADD STUDENT DETAILS",
+        route: "/addStudent",
+        highlight: "yellow",
+      },
+      {
+        text: "SHOW STUDENTS WITH FEES DUES",
+        route: "/studentsWithDues",
+        highlight: "yellow",
+      },
+      {
+        text: "SHOW STUDENTS WITH LOUIES",
+        route: "/studentsWithLouies",
+        highlight: "red",
+      },
+      {
+        text: "SHOW STUDENTS WITH LOCKER",
+        route: "/studentsWithLocker",
+        highlight: "yellow",
+      },
+    ],
+  ];
 
   return (
-    <Container className="mt-5">
-      <h1 className="text-center mb-4 text-bg bg-yellow-400 ">Home Page</h1>
-      <Row className="justify-content-center">
-        <Col md={6} className="d-flex flex-column align-items-center">
-          <Button
-            className="neon-button custom-button-spacing bg-black"
-            style={{
-              borderColor: getRandomColor(),
-              color: "#fff",
-              width: "250px", // Set consistent width
-            }}
-            onClick={() => navigate("/addStudent")}
-          >
-            Add Student Details
-          </Button>
+    <Container className="text-center mt-5" style={{ maxWidth: "600px" }}>
+      {/* Header */}
+      <div className="neon-header">HOME PAGE</div>
 
-          <Button
-            className="neon-button custom-button-spacing bg-black"
-            style={{
-              borderColor: getRandomColor(),
-              color: "#fff",
-              width: "250px", // Set consistent width
-            }}
-            onClick={() => navigate("/showStudentsData")}
-          >
-            Show All Student Details
-          </Button>
+      {/* Two-column layout */}
+      <div className="button-grid">
+        {/* Left Column */}
+        <div className="button-column">
+          {buttons[0].map((btn, idx) => (
+            <Button
+              key={idx}
+              className={`neon-button ${
+                btn.highlight === "red" ? "neon-red" : "neon-yellow"
+              }`}
+              onClick={() => navigate(btn.route)}
+            >
+              <FontAwesomeIcon
+                icon={btn.highlight === "red" ? faPause : faPlay}
+                className="button-icon"
+              />
+              {btn.text}
+            </Button>
+          ))}
+        </div>
 
-          <Button
-            className="neon-button custom-button-spacing bg-black"
-            style={{
-              borderColor: getRandomColor(),
-              color: "#fff",
-              width: "250px", // Set consistent width
-            }}
-            onClick={() => navigate("/unallocatedStudentsSeats")}
-          >
-            Students with Unallocated Seats
-          </Button>
-
-          <Button
-            className="neon-button custom-button-spacing bg-black"
-            style={{
-              borderColor: getRandomColor(),
-              color: "#fff",
-              width: "250px", // Set consistent width
-            }}
-            onClick={() => navigate("/studentsWithDues")}
-          >
-            Show Students with Fees Dues
-          </Button>
-
-          <Button
-            className="neon-button custom-button-spacing bg-black"
-            style={{
-              borderColor: getRandomColor(),
-              color: "#fff",
-              width: "250px", // Set consistent width
-            }}
-            onClick={() => navigate("/StudentsWithoutAllocatedSeats")}
-          >
-            Show Vacant Seats
-          </Button>
-
-          <Button
-            className="neon-button custom-button-spacing bg-black"
-            style={{
-              borderColor: getRandomColor(),
-              color: "#fff",
-              width: "250px", // Set consistent width
-            }}
-            onClick={() => navigate("/studentsWithLocker")}
-          >
-            Show Students with Locker
-          </Button>
-
-          <Button
-            className="neon-button custom-button-spacing bg-black"
-            style={{
-              borderColor: getRandomColor(),
-              color: "#fff",
-              width: "250px", // Set consistent width
-            }}
-            onClick={() => navigate("/studentsWithEndedMonth")}
-          >
-            Show Students whose Month Ended
-          </Button>
-        </Col>
-      </Row>
+        {/* Right Column */}
+        <div className="button-column">
+          {buttons[1].map((btn, idx) => (
+            <Button
+              key={idx}
+              className={`neon-button ${
+                btn.highlight === "red" ? "neon-red" : "neon-yellow"
+              }`}
+              onClick={() => navigate(btn.route)}
+            >
+              <FontAwesomeIcon
+                icon={btn.highlight === "red" ? faPause : faPlay}
+                className="button-icon"
+              />
+              {btn.text}
+            </Button>
+          ))}
+        </div>
+      </div>
     </Container>
   );
 };
