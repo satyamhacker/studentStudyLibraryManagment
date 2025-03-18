@@ -3,7 +3,8 @@
 
 ===problem========
 
-1.all imp theings should be in .env file...
+1.only theing left is when jwt token is not verified or expired redirect
+it to login page...
 
 
 ==================================================================

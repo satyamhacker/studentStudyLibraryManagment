@@ -15,6 +15,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/neonTable.css"; // Custom CSS file for neon effects
+import handleTokenError from "../utils/handleTokenError"; // Import the utility function
 
 const ShowStudentData = () => {
   const [students, setStudents] = useState([]);
@@ -51,6 +52,8 @@ const ShowStudentData = () => {
         }
       );
 
+      console.log("response.data: ", response);
+
       if (response.data.length === 0) {
         alert("Please add Student data.");
         navigate("/addStudent");
@@ -58,7 +61,7 @@ const ShowStudentData = () => {
         setStudents(response.data);
       }
     } catch (error) {
-      console.error("Error fetching students:", error);
+      handleTokenError(error, navigate); // Pass navigate as an argument
     }
   };
 
