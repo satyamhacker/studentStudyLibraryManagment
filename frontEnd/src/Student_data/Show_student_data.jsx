@@ -104,6 +104,17 @@ const ShowStudentData = () => {
       console.error("Error updating student:", error);
       if (error.response?.data?.error === "Validation failed") {
         setErrors({ ...errors, api: error.response.data.details.join(", ") });
+      } else if (error.response?.status === 409) {
+        const {
+          error: errorMessage,
+          freeTimeSlots,
+          occupiedBy,
+        } = error.response.data;
+        alert(
+          `${errorMessage} Occupied by: ${occupiedBy}. Free time slots: ${freeTimeSlots.join(
+            ", "
+          )}`
+        );
       }
     }
   };

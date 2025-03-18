@@ -3,8 +3,11 @@
 
 ===problem========
 
-1.while editing student data someone can give seatnumber and same 
-timing which other user have that ....
+1.while editing student data someone can give same seatnumber and same timing
+ which other user have that so in backend check if that 
+ same seatnumber and same timing is already there then give 
+ a response ---this seat is already occupied in this 
+ time by Name of the user....
 
 
 ==================================================================
