@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Table, Container, Row, Col, Form } from "react-bootstrap";
-import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../styles/neonUnallocated.css"; // Custom CSS file for neon effects
+import { getRequest } from "../utils/api"; // Import the utility functions
 
 const UnallocatedStudentsSeat = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const navigate = useNavigate(); // Define navigate
 
   // Fetch student data from backend
   useEffect(() => {
@@ -15,17 +17,12 @@ const UnallocatedStudentsSeat = () => {
 
   const fetchStudentData = async () => {
     try {
-      const token = localStorage.getItem("jwtToken");
-      const response = await axios.get(
+      const data = await getRequest(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        navigate
       );
-      console.log("Response data:", response.data);
-      const unallocatedStudents = response.data.filter(
+      console.log("Response data:", data);
+      const unallocatedStudents = data.filter(
         (student) => student.SeatNumber === "0" // Filter for SeatNumber "0"
       );
 

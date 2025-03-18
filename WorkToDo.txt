@@ -3,8 +3,8 @@
 
 ===problem========
 
-1.only theing left is when jwt token is not verified or expired redirect
-it to login page...
+1.while editing student data someone can give seatnumber and same 
+timing which other user have that ....
 
 
 ==================================================================

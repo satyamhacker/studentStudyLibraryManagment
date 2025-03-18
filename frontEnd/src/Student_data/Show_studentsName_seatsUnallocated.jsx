@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Modal, Button, Card } from "react-bootstrap";
-import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../styles/neonSeats.css"; // Custom CSS file for neon effects
+import { getRequest } from "../utils/api"; // Import the utility functions
 
 const ShowVacantSeats = () => {
   const [occupiedSeats, setOccupiedSeats] = useState([]);
   const [students, setStudents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const navigate = useNavigate(); // Define navigate
 
   // Fetch occupied seat data from backend
   useEffect(() => {
@@ -16,20 +18,15 @@ const ShowVacantSeats = () => {
 
   const fetchOccupiedSeats = async () => {
     try {
-      const token = localStorage.getItem("jwtToken"); // Retrieve token from localStorage
-      const response = await axios.get(
+      const data = await getRequest(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Send token in Authorization header
-          },
-        }
-      ); // API endpoint unchanged
-      setStudents(response.data);
-      console.log("Students data:", response.data);
+        navigate
+      );
+      setStudents(data);
+      console.log("Students data:", data);
 
       // Ensure that SeatNumber is treated as a string
-      const seatNumbers = response.data
+      const seatNumbers = data
         .map((student) => student.SeatNumber)
         .filter((seat) => seat !== null && seat !== undefined)
         .map((seat) => seat.toString());

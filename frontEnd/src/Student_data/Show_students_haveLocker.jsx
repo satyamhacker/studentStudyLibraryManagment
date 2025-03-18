@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Modal, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
 import "../styles/neonLockers.css"; // Custom CSS file for neon effects
+import { getRequest } from "../utils/api"; // Import the utility functions
 
 const ShowLockers = () => {
   const [occupiedLockers, setOccupiedLockers] = useState([]);
   const [students, setStudents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const navigate = useNavigate(); // Define navigate
 
   // Fetch occupied locker data from backend
   useEffect(() => {
@@ -16,18 +19,13 @@ const ShowLockers = () => {
 
   const fetchOccupiedLockers = async () => {
     try {
-      const token = localStorage.getItem("jwtToken"); // Retrieve JWT token from localStorage
-      const response = await axios.get(
+      const data = await getRequest(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Send JWT token in the Authorization header
-          },
-        }
-      ); // API endpoint unchanged
-      setStudents(response.data);
+        navigate
+      );
+      setStudents(data);
 
-      const lockerNumbers = response.data
+      const lockerNumbers = data
         .map((student) => student.LockerNumber)
         .filter((locker) => locker !== null && locker !== undefined)
         .map((locker) => locker.toString());

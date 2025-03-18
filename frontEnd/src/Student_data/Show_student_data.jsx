@@ -16,6 +16,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/neonTable.css"; // Custom CSS file for neon effects
 import handleTokenError from "../utils/handleTokenError"; // Import the utility function
+import { getRequest, deleteRequest, updateRequest } from "../utils/api"; // Import the utility functions
 
 const ShowStudentData = () => {
   const [students, setStudents] = useState([]);
@@ -42,39 +43,28 @@ const ShowStudentData = () => {
 
   const fetchStudentData = async () => {
     try {
-      const token = localStorage.getItem("jwtToken");
-      const response = await axios.get(
+      const data = await getRequest(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        navigate
       );
+      console.log("response.data: ", data);
 
-      console.log("response.data: ", response);
-
-      if (response.data.length === 0) {
+      if (data.length === 0) {
         alert("Please add Student data.");
         navigate("/addStudent");
       } else {
-        setStudents(response.data);
+        setStudents(data);
       }
     } catch (error) {
-      handleTokenError(error, navigate); // Pass navigate as an argument
+      console.error("Error fetching students:", error);
     }
   };
 
   const deleteStudent = async (id) => {
     try {
-      const token = localStorage.getItem("jwtToken");
-      await axios.delete(
+      await deleteRequest(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/deleteStudent/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        navigate
       );
       fetchStudentData();
       setShowDeleteModal(false);
@@ -101,17 +91,12 @@ const ShowStudentData = () => {
         return;
       }
 
-      const token = localStorage.getItem("jwtToken");
-      await axios.put(
+      await updateRequest(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/updateStudent/${
           currentStudent.id
         }`,
         currentStudent,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        navigate
       );
       setShowEditModal(false);
       fetchStudentData();

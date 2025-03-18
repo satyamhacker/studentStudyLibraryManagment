@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Modal, Button } from "react-bootstrap";
-import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../styles/neonExpired.css"; // Custom CSS file for neon effects
+import { getRequest } from "../utils/api"; // Import the utility functions
 
 const ShowStudentsWithEndedMonth = () => {
   const [students, setStudents] = useState([]);
@@ -9,6 +10,7 @@ const ShowStudentsWithEndedMonth = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate(); // Define navigate
 
   // Fetch student data from backend
   useEffect(() => {
@@ -17,16 +19,11 @@ const ShowStudentsWithEndedMonth = () => {
 
   const fetchStudents = async () => {
     try {
-      const token = localStorage.getItem("jwtToken"); // Retrieve token from localStorage
-      const response = await axios.get(
+      const data = await getRequest(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Send token in Authorization header
-          },
-        }
-      ); // API endpoint unchanged
-      const studentsData = response.data;
+        navigate
+      );
+      const studentsData = data;
       // console.log("Students data:", studentsData);
 
       // Filter students whose FeesPaidTillDate has passed the current date
