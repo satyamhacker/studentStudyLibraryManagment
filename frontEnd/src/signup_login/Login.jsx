@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom"; // Import Link here
 import Context from "../Context/Context";
-import axios from "axios";
+import { postRequest } from "../utils/api"; // Import the postRequest function
 
 const Login = () => {
   // State to store input values
@@ -18,15 +18,18 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/login",
-        formData
-      ); // Make POST request to login endpoint
+      const response = await postRequest(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/login`,
+        formData,
+        navigate
+      ); // Use postRequest function
+
+      console.log("response received", response);
 
       // Check if the login was successful based on response structure
-      if (response.status === 200 && response.data.length > 0) {
-        console.log("test", response.data[1]);
-        const userData = response.data[0]; // Assuming the user data is the first element in the array
+      if (response.length > 0) {
+        console.log("test", response[1]);
+        const userData = response[0]; // Assuming the user data is the first element in the array
         alert("Login successful");
 
         // Set the user's email in the context and navigate to home
@@ -34,7 +37,7 @@ const Login = () => {
         ContextData.logIn();
 
         // Set isLoggedIn to true in local storage
-        localStorage.setItem("jwtToken", response.data[1]);
+        localStorage.setItem("jwtToken", response[1]);
         localStorage.setItem("isLoggedIn", true);
 
         navigate("/home");
