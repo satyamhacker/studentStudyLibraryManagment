@@ -22,6 +22,7 @@ const AddStudent = () => {
     AmountPaid: "",
     AmountDue: "",
     LockerNumber: "",
+    PaymentMode: "", // Add PaymentMode to the state
   });
 
   const [errors, setErrors] = useState({});
@@ -33,6 +34,11 @@ const AddStudent = () => {
     { label: "18:00 - 22:00", value: "18:00-22:00" },
     { label: "22:00 - 06:00", value: "22:00-06:00" },
     { label: "Reserved", value: "reserved" },
+  ];
+
+  const paymentModeOptions = [
+    { label: "Online", value: "online" },
+    { label: "Cash", value: "cash" },
   ];
 
   const handleChange = (e) => {
@@ -105,6 +111,10 @@ const AddStudent = () => {
       newErrors.ContactNumber = "Contact Number must be exactly 10 digits";
     }
 
+    if (!studentData.PaymentMode) {
+      newErrors.PaymentMode = "Payment Mode is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -155,6 +165,7 @@ const AddStudent = () => {
         AmountPaid: "",
         AmountDue: "",
         LockerNumber: "",
+        PaymentMode: "",
       });
       setErrors({});
     } catch (error) {
@@ -410,54 +421,78 @@ const AddStudent = () => {
                 />
               </Form.Group>
             </Col>
+
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Payment Mode</Form.Label>
+                <TextField
+                  select
+                  variant="outlined"
+                  name="PaymentMode"
+                  value={studentData.PaymentMode}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  error={!!errors.PaymentMode}
+                  helperText={errors.PaymentMode}
+                  className="neon-input"
+                >
+                  {paymentModeOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Form.Group>
+            </Col>
+
+            <Form.Group className="mb-4">
+              <Form.Label>Amount Paid</Form.Label>
+              <TextField
+                variant="outlined"
+                name="AmountPaid"
+                value={studentData.AmountPaid}
+                onChange={handleChange}
+                fullWidth
+                required
+                placeholder="Enter Amount Paid"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PaymentIcon />
+                      <span className="mr-2">₹</span>
+                    </InputAdornment>
+                  ),
+                }}
+                error={!!errors.AmountPaid}
+                helperText={errors.AmountPaid}
+                className="neon-input"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-4">
+              <Form.Label>Amount Due</Form.Label>
+              <TextField
+                variant="outlined"
+                name="AmountDue"
+                value={studentData.AmountDue}
+                onChange={handleChange}
+                fullWidth
+                placeholder="Enter Amount Due"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PaymentIcon />
+                      <span className="mr-2">₹</span>
+                    </InputAdornment>
+                  ),
+                }}
+                error={!!errors.AmountDue}
+                helperText={errors.AmountDue}
+                className="neon-input"
+              />
+            </Form.Group>
           </Row>
-
-          <Form.Group className="mb-4">
-            <Form.Label>Amount Paid</Form.Label>
-            <TextField
-              variant="outlined"
-              name="AmountPaid"
-              value={studentData.AmountPaid}
-              onChange={handleChange}
-              fullWidth
-              required
-              placeholder="Enter Amount Paid"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PaymentIcon />
-                    <span className="mr-2">₹</span>
-                  </InputAdornment>
-                ),
-              }}
-              error={!!errors.AmountPaid}
-              helperText={errors.AmountPaid}
-              className="neon-input"
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-4">
-            <Form.Label>Amount Due</Form.Label>
-            <TextField
-              variant="outlined"
-              name="AmountDue"
-              value={studentData.AmountDue}
-              onChange={handleChange}
-              fullWidth
-              placeholder="Enter Amount Due"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PaymentIcon />
-                    <span className="mr-2">₹</span>
-                  </InputAdornment>
-                ),
-              }}
-              error={!!errors.AmountDue}
-              helperText={errors.AmountDue}
-              className="neon-input"
-            />
-          </Form.Group>
 
           <Button variant="primary" type="submit" className="neon-button w-100">
             Submit

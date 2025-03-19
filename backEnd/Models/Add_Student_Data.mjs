@@ -112,13 +112,21 @@ const Student = sequelize.define('Student', {
   PaymentExpectedDateChanged: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 0, // Default to 0
-    validate: {
-      isInt: { msg: 'Payment Expected Date Changed must be an integer' },
-    },
-  },
-}, {
-  tableName: 'students', // Explicit table name
+     // Default to 0
+      validate: {
+        isInt: { msg: 'Payment Expected Date Changed must be an integer' },
+      },
+      },
+      PaymentMode: {
+      type: DataTypes.ENUM('online', 'cash'), // Enum for Payment Mode
+      allowNull: true,
+      defaultValue: null, // Default to null
+      validate: {
+        notEmpty: { msg: 'Payment Mode is required' },
+      },
+      },
+    }, {
+      tableName: 'students', // Explicit table name
   timestamps: true, // Adds createdAt and updatedAt fields
   underscored: false, // Use camelCase column names
 });
