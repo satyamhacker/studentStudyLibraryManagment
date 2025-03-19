@@ -225,6 +225,9 @@ const ShowStudentsWithEndedMonth = () => {
                 <strong>Fees Paid Till Date:</strong>{" "}
                 {formatDate(selectedStudent.FeesPaidTillDate)}
               </p>
+              <p>
+                <strong>Payment Mode:</strong> {selectedStudent.PaymentMode}
+              </p>
               <Form.Group controlId="paymentExpectedDate" className="mb-3">
                 <Form.Label>Payment Expected Date</Form.Label>
                 <Form.Control

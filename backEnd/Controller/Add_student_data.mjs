@@ -17,6 +17,7 @@ export const addStudentData = async (req, res) => {
       AmountPaid,
       AmountDue,
       LockerNumber,
+      PaymentMode
     } = req.body;
 
     // Validate required fields
@@ -30,11 +31,11 @@ export const addStudentData = async (req, res) => {
       !TimeSlots || !Array.isArray(TimeSlots) || TimeSlots.length === 0 ||
       !Shift ||
       !FeesPaidTillDate ||
-      !AmountPaid
+      !AmountPaid ||
+      !PaymentMode
     ) {
       return res.status(400).json({ error: 'All required fields must be provided and TimeSlots must be a non-empty array' });
     }
-
 
     // Check if RegistrationNumber or ContactNumber already exists
     const existingStudent = await Student.findOne({
@@ -83,7 +84,6 @@ export const addStudentData = async (req, res) => {
       }
     }
 
-
     // Check if LockerNumber is already assigned to another student
     if (LockerNumber) {
       const existingLocker = await Student.findOne({
@@ -115,6 +115,7 @@ export const addStudentData = async (req, res) => {
       AmountPaid: parseFloat(AmountPaid),
       AmountDue: AmountDue ? parseFloat(AmountDue) : null,
       LockerNumber,
+      PaymentMode,
     });
 
     // Respond with the newly created student data

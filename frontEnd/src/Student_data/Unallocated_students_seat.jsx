@@ -106,6 +106,7 @@ const UnallocatedStudentsSeat = () => {
                 <th>Time Slots</th>
                 <th>Shift</th>
                 <th>Seat Number</th>
+                <th>Payment Mode</th>
               </tr>
             </thead>
             <tbody>
@@ -121,6 +122,7 @@ const UnallocatedStudentsSeat = () => {
                   <td>{student.TimeSlots.join(", ")}</td>
                   <td>{student.Shift}</td>
                   <td>{student.SeatNumber}</td>
+                  <td>{student.PaymentMode}</td>
                 </tr>
               ))}
             </tbody>

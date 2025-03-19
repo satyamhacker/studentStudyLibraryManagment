@@ -161,6 +161,9 @@ const ShowVacantSeats = () => {
                     <strong>Fees Paid Till Date:</strong>{" "}
                     {formatDate(student.FeesPaidTillDate)}
                   </p>
+                  <p>
+                    <strong>Payment Mode:</strong> {student.PaymentMode}
+                  </p>
                 </Card.Text>
               </Card.Body>
             </Card>

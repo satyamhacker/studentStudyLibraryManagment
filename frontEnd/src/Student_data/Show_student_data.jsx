@@ -18,6 +18,11 @@ import "../styles/neonTable.css"; // Custom CSS file for neon effects
 import handleTokenError from "../utils/handleTokenError"; // Import the utility function
 import { getRequest, deleteRequest, updateRequest } from "../utils/api"; // Import the utility functions
 
+const paymentModeOptions = [
+  { label: "Online", value: "online" },
+  { label: "Cash", value: "cash" },
+];
+
 const ShowStudentData = () => {
   const [students, setStudents] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -121,6 +126,18 @@ const ShowStudentData = () => {
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handlePaymentModeChange = (e) => {
+    const { value } = e.target;
+    setCurrentStudent((prev) => ({
+      ...prev,
+      PaymentMode: value,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      PaymentMode: "",
+    }));
   };
 
   const filteredStudents = students.filter((student) =>
@@ -231,6 +248,7 @@ const ShowStudentData = () => {
                 <th>Amount Due</th>
                 <th>Locker Number</th>
                 <th>Fees Paid Till Date</th>
+                <th>Payment Mode</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -250,6 +268,7 @@ const ShowStudentData = () => {
                   <td>{"₹" + (student.AmountDue || "0")}</td>
                   <td>{student.LockerNumber}</td>
                   <td>{formatDate(student.FeesPaidTillDate)}</td>
+                  <td>{student.PaymentMode}</td>
                   <td>
                     <IconButton
                       onClick={() => showEditModalForStudent(student)}
@@ -493,6 +512,28 @@ const ShowStudentData = () => {
                 }
                 className="neon-input"
               />
+            </Form.Group>
+
+            <Form.Group controlId="PaymentMode" className="mb-3">
+              <Form.Label>Payment Mode</Form.Label>
+              <TextField
+                select
+                variant="outlined"
+                name="PaymentMode"
+                value={currentStudent?.PaymentMode || ""}
+                onChange={handlePaymentModeChange}
+                fullWidth
+                required
+                error={!!errors.PaymentMode}
+                helperText={errors.PaymentMode}
+                className="neon-input"
+              >
+                {paymentModeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Form.Group>
           </Form>
           {errors.api && <p className="text-danger">{errors.api}</p>}
