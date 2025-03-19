@@ -5,9 +5,7 @@
 
 
 
-1.Add password reset functionality using app password so that 
-forgot password will be a  6 digit otp and when user will give 
-that correct 6 digit otp then only he can set the new password...
+1.Add new dropdown box in Add_student_data.jsx payment mode--online/cash..
 
 
 ==================================================================

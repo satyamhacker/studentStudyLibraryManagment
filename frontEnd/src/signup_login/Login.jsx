@@ -27,7 +27,7 @@ const Login = () => {
       console.log("response received", response);
 
       // Check if the login was successful based on response structure
-      if (response.length > 0) {
+      if (response && response.length > 0) {
         console.log("test", response[1]);
         const userData = response[0]; // Assuming the user data is the first element in the array
         alert("Login successful");
@@ -116,6 +116,11 @@ const Login = () => {
         <div className="mt-4 active:bg-green-600 underline">
           <Link to="/" className="font-bold bg-white">
             Go to Signup page
+          </Link>
+        </div>
+        <div className="mt-4 active:bg-green-600 underline">
+          <Link to="/forgotPassword" className="font-bold bg-white">
+            Forgot Password
           </Link>
         </div>
       </div>

@@ -9,7 +9,10 @@ import {
   updateStudentData,
   updatePaymentExpectedDate,
   exportStudentDataToExcel, // Import the new controller
+  sendOtp, verifyOtp, resetPassword
 } from "./index.Controller.mjs"; // Import your signupLogin controller
+
+
 
 import { VerifyUserJwt } from '../Middleware/Jwt.mjs'; // Import the VerifyUserJwt middleware
 
@@ -29,6 +32,11 @@ app.use(express.json());
 
 app.post("/signup", signupCreate); // Route for signup
 app.post("/login", login); // Route for login
+app.post('/sendOtp', sendOtp);
+app.post('/verifyOtp', verifyOtp);
+app.post('/resetPassword', resetPassword);
+
+
 app.post("/addStudent",VerifyUserJwt,addStudentData);
 
 // Route for fetching student data

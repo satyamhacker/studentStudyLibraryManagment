@@ -12,6 +12,7 @@ import ShowVacantSeats from "./Student_data/Show_studentsName_seatsUnallocated";
 import ShowStudentsWithEndedMonth from "./Student_data/Students_subscription_ends";
 import PublicRoute from "./Student_data/PublicRoute"; // Import the PublicRoute component
 import PrivateRoute from "./Student_data/PrivateRoute"; // Import the PrivateRoute component
+import ForgotPassword from "./signup_login/ForgotPassword";
 
 function App() {
   useEffect(() => {
@@ -39,6 +40,10 @@ function App() {
       <Routes>
         <Route path="/login" element={<PublicRoute element={<Login />} />} />
         <Route path="/" element={<PublicRoute element={<Signup />} />} />
+        <Route
+          path="/forgotPassword"
+          element={<PublicRoute element={<ForgotPassword />} />}
+        />
 
         {/* Private Routes */}
         <Route
