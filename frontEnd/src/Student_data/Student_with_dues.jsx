@@ -83,6 +83,7 @@ const StudentWithDues = () => {
                 <th>Amount Due</th>
                 <th>Locker Number</th>
                 <th>Fees Paid Till</th>
+                <th>Payment Mode</th>
               </tr>
             </thead>
             <tbody>
@@ -106,6 +107,7 @@ const StudentWithDues = () => {
                       "en-US"
                     )}
                   </td>
+                  <td>{student.PaymentMode}</td>
                 </tr>
               ))}
             </tbody>

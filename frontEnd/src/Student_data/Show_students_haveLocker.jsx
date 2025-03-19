@@ -154,6 +154,9 @@ const ShowLockers = () => {
                 <strong>Fees Paid Till:</strong>{" "}
                 {formatDate(selectedStudent.FeesPaidTillDate)}
               </p>
+              <p>
+                <strong>Payment Mode:</strong> {selectedStudent.PaymentMode}
+              </p>
             </div>
           )}
         </Modal.Body>
