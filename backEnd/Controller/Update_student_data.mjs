@@ -4,6 +4,9 @@ import { Op, literal } from 'sequelize'; // Ensure Op and literal are imported
 export const updateStudentData = async (req, res) => {
   const { id } = req.params;
 
+  const updateData = req.body;
+
+
   try {
     // Find the student by primary key (id)
     const student = await Student.findByPk(id);

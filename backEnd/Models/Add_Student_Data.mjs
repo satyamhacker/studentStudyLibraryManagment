@@ -1,4 +1,4 @@
-import {sequelize} from './modelsImportExport.mjs'
+import { sequelize } from './modelsImportExport.mjs';
 import { DataTypes } from 'sequelize';
 
 // Define the Student model using the imported sequelize instance
@@ -99,6 +99,23 @@ const Student = sequelize.define('Student', {
   LockerNumber: {
     type: DataTypes.STRING(20),
     allowNull: true, // Optional field
+  },
+  PaymentExpectedDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    defaultValue: DataTypes.NOW, // Default to current date
+    validate: {
+      notEmpty: { msg: 'Payment Expected Date is required' },
+      isDate: { msg: 'Payment Expected Date must be a valid date' },
+    },
+  },
+  PaymentExpectedDateChanged: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0, // Default to 0
+    validate: {
+      isInt: { msg: 'Payment Expected Date Changed must be an integer' },
+    },
   },
 }, {
   tableName: 'students', // Explicit table name

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Modal, Button } from "react-bootstrap";
+import { Container, Row, Col, Modal, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../styles/neonExpired.css"; // Custom CSS file for neon effects
-import { getRequest } from "../utils/api"; // Import the utility functions
+import { getRequest, updatePaymentExpectedDate } from "../utils/api"; // Import the utility functions
 
 const ShowStudentsWithEndedMonth = () => {
   const [students, setStudents] = useState([]);
@@ -10,6 +10,11 @@ const ShowStudentsWithEndedMonth = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [paymentExpectedDate, setPaymentExpectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [expectedDateChangeCount, setExpectedDateChangeCount] = useState(0);
+  const [showUpdateButton, setShowUpdateButton] = useState(false); // State to control button visibility
   const navigate = useNavigate(); // Define navigate
 
   // Fetch student data from backend
@@ -43,7 +48,12 @@ const ShowStudentsWithEndedMonth = () => {
   // Handle student click to show modal with details
   const handleStudentClick = (student) => {
     setSelectedStudent(student);
+    setPaymentExpectedDate(
+      student.PaymentExpectedDate || new Date().toISOString().split("T")[0]
+    );
+    setExpectedDateChangeCount(student.PaymentExpectedDateChanged || 0);
     setShowModal(true);
+    setShowUpdateButton(false); // Hide the update button when modal is opened
   };
 
   // Close the modal
@@ -55,6 +65,47 @@ const ShowStudentsWithEndedMonth = () => {
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  // Handle payment expected date change
+  const handlePaymentExpectedDateChange = async () => {
+    const newDate = paymentExpectedDate;
+    if (newDate !== selectedStudent.PaymentExpectedDate) {
+      setExpectedDateChangeCount(expectedDateChangeCount + 1);
+      console.log(
+        `Payment Expected Date changed to: ${newDate}, Change Count: ${
+          expectedDateChangeCount + 1
+        }, Student ID: ${selectedStudent.id}`
+      );
+
+      const updatedStudentData = {
+        ...selectedStudent,
+        PaymentExpectedDate: newDate,
+        PaymentExpectedDateChanged: expectedDateChangeCount + 1,
+      };
+
+      try {
+        await updatePaymentExpectedDate(
+          `${import.meta.env.VITE_BACKEND_BASE_URL}/updatePaymentExpectedDate/${
+            selectedStudent.id
+          }`,
+          updatedStudentData,
+          navigate
+        );
+        console.log("Student data updated successfully");
+      } catch (error) {
+        console.error("Error updating student data:", error);
+      }
+    }
+  };
+
+  // Handle date input change
+  const handleDateInputChange = (e) => {
+    const newDate = e.target.value;
+    if (newDate !== paymentExpectedDate) {
+      setPaymentExpectedDate(newDate);
+      setShowUpdateButton(true); // Show the update button when a new date is selected
+    }
   };
 
   // Filter expired students based on search term
@@ -174,6 +225,26 @@ const ShowStudentsWithEndedMonth = () => {
                 <strong>Fees Paid Till Date:</strong>{" "}
                 {formatDate(selectedStudent.FeesPaidTillDate)}
               </p>
+              <Form.Group controlId="paymentExpectedDate" className="mb-3">
+                <Form.Label>Payment Expected Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={paymentExpectedDate}
+                  onChange={handleDateInputChange}
+                  className="neon-input"
+                />
+                <p className="text-green-500">
+                  Payment Expected Date Changed: {expectedDateChangeCount}
+                </p>
+              </Form.Group>
+              {showUpdateButton && (
+                <Button
+                  className="neon-button bg-black text-white"
+                  onClick={handlePaymentExpectedDateChange}
+                >
+                  Update Date
+                </Button>
+              )}
             </div>
           )}
         </Modal.Body>

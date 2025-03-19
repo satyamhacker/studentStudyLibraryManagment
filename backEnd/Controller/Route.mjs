@@ -7,8 +7,12 @@ import {
   fetchStudentsData,
   deleteStudentData,
   updateStudentData,
+  updatePaymentExpectedDate,
   exportStudentDataToExcel, // Import the new controller
+  sendOtp, verifyOtp, resetPassword
 } from "./index.Controller.mjs"; // Import your signupLogin controller
+
+
 
 import { VerifyUserJwt } from '../Middleware/Jwt.mjs'; // Import the VerifyUserJwt middleware
 
@@ -28,6 +32,11 @@ app.use(express.json());
 
 app.post("/signup", signupCreate); // Route for signup
 app.post("/login", login); // Route for login
+app.post('/sendOtp', sendOtp);
+app.post('/verifyOtp', verifyOtp);
+app.post('/resetPassword', resetPassword);
+
+
 app.post("/addStudent",VerifyUserJwt,addStudentData);
 
 // Route for fetching student data
@@ -37,7 +46,10 @@ app.delete("/deleteStudent/:id",VerifyUserJwt, deleteStudentData);
 
 app.put("/updateStudent/:id",VerifyUserJwt, updateStudentData);
 
+app.put("/updatePaymentExpectedDate/:id",VerifyUserJwt, updatePaymentExpectedDate);
+
 app.get("/exportStudents",VerifyUserJwt, exportStudentDataToExcel); // Add the new route
+
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);

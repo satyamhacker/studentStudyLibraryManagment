@@ -53,10 +53,21 @@ const HomePage = () => {
     ],
   ];
 
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.clear(); // Clear all local storage data
+    navigate("/login"); // Redirect to login page
+  };
+
   return (
     <Container className="text-center mt-5" style={{ maxWidth: "600px" }}>
-      {/* Header */}
-      <div className="neon-header">HOME PAGE</div>
+      {/* Header with Logout Button */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="neon-header">HOME PAGE</div>
+        <Button className="neon-button neon-red" onClick={handleLogout}>
+          Logout
+        </Button>
+      </div>
 
       {/* Two-column layout */}
       <div className="button-grid">

@@ -1,6 +1,5 @@
 import { Student } from '../Models/modelsImportExport.mjs'; // Adjusted path and import
 import { Op, fn, literal } from 'sequelize'; // Ensure Op, fn, and literal are imported
-import { VerifyUserJwt } from '../Middleware/Jwt.mjs';
 
 export const addStudentData = async (req, res) => {
   try {

@@ -46,3 +46,13 @@ export const updateRequest = async (url, data, navigate) => {
     throw error;
   }
 };
+
+export const updatePaymentExpectedDate = async (url, data, navigate) => {
+  try {
+    const response = await axios.put(url, data, { headers: getHeaders() });
+    return response.data;
+  } catch (error) {
+    handleTokenError(error, navigate);
+    throw error;
+  }
+};
