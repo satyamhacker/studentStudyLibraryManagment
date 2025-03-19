@@ -4,6 +4,7 @@ import { fetchStudentsData } from "./Fetch_student_datas.mjs";
 import { deleteStudentData } from "./Delete_student_data.mjs";
 import { updateStudentData } from "./Update_student_data.mjs";
 import { exportStudentDataToExcel } from "./Export_student_data.mjs";
+import { updatePaymentExpectedDate } from "./Update_payment_expected_date.mjs";
 
 export {
   signupCreate,
@@ -12,5 +13,6 @@ export {
   fetchStudentsData,
   deleteStudentData,
   updateStudentData,
+  updatePaymentExpectedDate,
   exportStudentDataToExcel
 };

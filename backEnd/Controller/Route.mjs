@@ -7,6 +7,7 @@ import {
   fetchStudentsData,
   deleteStudentData,
   updateStudentData,
+  updatePaymentExpectedDate,
   exportStudentDataToExcel, // Import the new controller
 } from "./index.Controller.mjs"; // Import your signupLogin controller
 
@@ -37,7 +38,10 @@ app.delete("/deleteStudent/:id",VerifyUserJwt, deleteStudentData);
 
 app.put("/updateStudent/:id",VerifyUserJwt, updateStudentData);
 
+app.put("/updatePaymentExpectedDate/:id",VerifyUserJwt, updatePaymentExpectedDate);
+
 app.get("/exportStudents",VerifyUserJwt, exportStudentDataToExcel); // Add the new route
+
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
