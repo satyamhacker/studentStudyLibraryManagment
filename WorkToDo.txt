@@ -3,12 +3,17 @@
 
 ===problem========
 
-1.while editing student data someone can give same seatnumber and same timing
- which other user have that so in backend check if that 
- same seatnumber and same timing is already there then give 
- a response ---this seat is already occupied in this 
- time by Name of the user....
 
+1.Add password reset functionality using app password so that 
+forgot password will be a  6 digit otp and when user will give 
+that correct 6 digit otp then only he can set the new password...
+
+
+2.in show_students_subscription_ended file  in that add a payment 
+expected date by default it will be currect date and 
+once admin set the expected date beside the expected date 
+it will also show the count how many time expected date is 
+changed and count will increase if expected date is changed ....
 
 ==================================================================
 

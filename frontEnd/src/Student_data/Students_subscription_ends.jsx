@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Modal, Button } from "react-bootstrap";
+import { Container, Row, Col, Modal, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "../styles/neonExpired.css"; // Custom CSS file for neon effects
 import { getRequest } from "../utils/api"; // Import the utility functions
@@ -10,6 +10,10 @@ const ShowStudentsWithEndedMonth = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [paymentExpectedDate, setPaymentExpectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [expectedDateChangeCount, setExpectedDateChangeCount] = useState(0);
   const navigate = useNavigate(); // Define navigate
 
   // Fetch student data from backend
@@ -55,6 +59,17 @@ const ShowStudentsWithEndedMonth = () => {
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  // Handle payment expected date change
+  const handlePaymentExpectedDateChange = (e) => {
+    setPaymentExpectedDate(e.target.value);
+    setExpectedDateChangeCount(expectedDateChangeCount + 1);
+    console.log(
+      `Payment Expected Date changed to: ${e.target.value}, Change Count: ${
+        expectedDateChangeCount + 1
+      }`
+    );
   };
 
   // Filter expired students based on search term
@@ -174,6 +189,18 @@ const ShowStudentsWithEndedMonth = () => {
                 <strong>Fees Paid Till Date:</strong>{" "}
                 {formatDate(selectedStudent.FeesPaidTillDate)}
               </p>
+              <Form.Group controlId="paymentExpectedDate" className="mb-3">
+                <Form.Label>Payment Expected Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={paymentExpectedDate}
+                  onChange={handlePaymentExpectedDateChange}
+                  className="neon-input"
+                />
+                <p className="text-green-500">
+                  Payment Expected Date Changed: {expectedDateChangeCount}
+                </p>
+              </Form.Group>
             </div>
           )}
         </Modal.Body>
