@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Table, Container, Row, Col, Form } from "react-bootstrap";
-import axios from "axios";
+import { getRequest } from "../utils/api"; // Import the utility functions
 import "../styles/neonDues.css"; // Custom CSS file for neon effects
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const StudentWithDues = () => {
   const [students, setStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const navigate = useNavigate(); // Define navigate
 
   // Fetch student data from backend
   useEffect(() => {
@@ -14,17 +17,12 @@ const StudentWithDues = () => {
 
   const fetchStudentData = async () => {
     try {
-      const token = localStorage.getItem("jwtToken"); // Retrieve token from localStorage
-      const response = await axios.get(
+      const data = await getRequest(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Send token in Authorization header
-          },
-        }
-      ); // API endpoint unchanged
-      setStudents(response.data);
-      console.log("response from server", response.data);
+        navigate
+      );
+      setStudents(data);
+      console.log("response from server", data);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
