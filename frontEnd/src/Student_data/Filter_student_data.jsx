@@ -12,6 +12,7 @@ const FilterStudentData = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [paymentMode, setPaymentMode] = useState(""); // Add state for Payment Mode
 
   const navigate = useNavigate(); // Define navigate
 
@@ -31,6 +32,7 @@ const FilterStudentData = () => {
         startDate && endDate
           ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
           : null,
+      paymentMode, // Add Payment Mode to the filter message
     };
 
     try {
@@ -167,6 +169,24 @@ const FilterStudentData = () => {
                   openToDate={getInitialDate()}
                 />
               </div>
+            </Form.Group>
+
+            <Form.Group controlId="selectPaymentMode" className="mt-3">
+              <Form.Label className="neon-text">Select Payment Mode</Form.Label>
+              <Form.Control
+                as="select"
+                value={paymentMode}
+                onChange={(e) => setPaymentMode(e.target.value)}
+                className="neon-input neon-dropdown"
+              >
+                <option value="">Select Payment Mode</option>
+                <option value="online" className="neon-option">
+                  Online
+                </option>
+                <option value="cash" className="neon-option">
+                  Cash
+                </option>
+              </Form.Control>
             </Form.Group>
           </Form>
         </Modal.Body>

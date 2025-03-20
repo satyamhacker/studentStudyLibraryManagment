@@ -7,6 +7,7 @@ import { exportStudentDataToExcel } from "./Export_student_data.mjs";
 import { updatePaymentExpectedDate } from "./Update_payment_expected_date.mjs";
 
 import { sendOtp, verifyOtp, resetPassword } from './Reset_password_related.mjs';
+import {filterStudentData} from './Filter_student_data.mjs';
 
 
 export {
@@ -20,5 +21,6 @@ export {
   exportStudentDataToExcel,
   sendOtp, 
   verifyOtp,
-  resetPassword
+  resetPassword,
+  filterStudentData
 };

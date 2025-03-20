@@ -20,6 +20,7 @@ export const getRequest = async (url, navigate) => {
 export const postRequest = async (url, data, navigate) => {
   try {
     const response = await axios.post(url, data, { headers: getHeaders() });
+    console.log("response", response);
     return response.data;
   } catch (error) {
     handleTokenError(error, navigate);
