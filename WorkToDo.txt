@@ -5,9 +5,7 @@
 
 
 
-1.Add new dropdown box in Add_student_data.jsx payment mode--online/cash.. and add that in database...
-
-2.Add filter functionality also on the basis of  month, year, days basis 
+1.Add filter functionality also on the basis of  month, year, days basis 
 and payment mode basis also like how many new admission happened and all...
 
 
