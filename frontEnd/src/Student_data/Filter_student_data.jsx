@@ -3,6 +3,8 @@ import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styles/filterStudentData.css"; // Import custom styles
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { postRequest } from "../utils/api"; // Import the utility functions
 
 const FilterStudentData = () => {
   const [showModal, setShowModal] = useState(false);
@@ -10,6 +12,8 @@ const FilterStudentData = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+
+  const navigate = useNavigate(); // Define navigate
 
   const handleFilterClick = () => {
     setShowModal(true);
@@ -19,13 +23,28 @@ const FilterStudentData = () => {
     setShowModal(false);
   };
 
-  const handleApplyFilter = () => {
-    let filterMessage = "Selected Filters: ";
-    if (selectedYear) filterMessage += `Year: ${selectedYear} `;
-    if (selectedMonth) filterMessage += `Month: ${selectedMonth} `;
-    if (startDate && endDate)
-      filterMessage += `Date Range: ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
-    alert(filterMessage);
+  const handleApplyFilter = async () => {
+    let filterMessage = {
+      year: selectedYear,
+      month: selectedMonth,
+      dateRange:
+        startDate && endDate
+          ? `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
+          : null,
+    };
+
+    try {
+      await postRequest(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/filterStudentData`,
+        filterMessage,
+        navigate
+      );
+      alert("Filter applied successfully");
+    } catch (error) {
+      console.error("Error applying filter:", error);
+      alert("Error applying filter");
+    }
+
     handleCloseModal();
   };
 
@@ -48,6 +67,16 @@ const FilterStudentData = () => {
     { length: 50 },
     (_, i) => new Date().getFullYear() - i
   );
+
+  const getInitialDate = () => {
+    if (selectedYear && selectedMonth) {
+      return new Date(selectedYear, months.indexOf(selectedMonth));
+    } else if (selectedYear) {
+      return new Date(selectedYear, 0);
+    } else {
+      return new Date();
+    }
+  };
 
   return (
     <Container className="mt-5 filter-container">
@@ -118,6 +147,10 @@ const FilterStudentData = () => {
                   endDate={endDate}
                   placeholderText="Start Date"
                   className="form-control neon-input"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  openToDate={getInitialDate()}
                 />
                 <DatePicker
                   selected={endDate}
@@ -128,6 +161,10 @@ const FilterStudentData = () => {
                   minDate={startDate}
                   placeholderText="End Date"
                   className="form-control neon-input ml-2"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  openToDate={getInitialDate()}
                 />
               </div>
             </Form.Group>

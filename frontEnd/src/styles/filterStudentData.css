@@ -84,6 +84,12 @@
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
+.neon-dropdown option:hover {
+  background-color: #0056b3;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
 .neon-dropdown:focus {
   border-color: #007bff;
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
