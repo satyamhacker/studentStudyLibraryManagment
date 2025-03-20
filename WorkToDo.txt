@@ -4,7 +4,9 @@
 ===problem========
 
 1.Add filter functionality also on the basis of  month, year, days basis 
-and payment mode basis also like how many new admission happened and all...
+and payment mode basis also like how many new admission happened and all===>
+
+backend is ready only in frontend Filter_student_data.jsx file need to show the filter response in tabular data...
 
 
 ==================================================================
