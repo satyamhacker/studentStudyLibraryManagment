@@ -50,6 +50,11 @@ const HomePage = () => {
         route: "/studentsWithEndedMonth",
         highlight: "yellow",
       },
+      {
+        text: "Filter Students Data",
+        route: "/filterStudentData",
+        highlight: "red",
+      },
     ],
   ];
 

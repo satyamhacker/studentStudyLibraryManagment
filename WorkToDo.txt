@@ -3,13 +3,7 @@
 
 ===problem========
 
-
-
-1.Add new dropdown box in Add_student_data.jsx payment mode--online/cash.. and add that in database...
-
-2.Add filter functionality also on the basis of  month, year, days basis 
-and payment mode basis also like how many new admission happened and all...
-
+NO problem everytheing is done only regres testing is left...
 
 ==================================================================
 
@@ -17,6 +11,3 @@ and payment mode basis also like how many new admission happened and all...
 2.There can be few students whose seat is not fixed so give 0 in seatNumber for them and it will work ...
 
 
-====problem to solve==============
-
-1.Make upload to google drive via cron job make it correct so that it will work...
