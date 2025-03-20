@@ -3,8 +3,6 @@
 
 ===problem========
 
-
-
 1.Add filter functionality also on the basis of  month, year, days basis 
 and payment mode basis also like how many new admission happened and all...
 

@@ -13,6 +13,7 @@ import ShowStudentsWithEndedMonth from "./Student_data/Students_subscription_end
 import PublicRoute from "./Student_data/PublicRoute"; // Import the PublicRoute component
 import PrivateRoute from "./Student_data/PrivateRoute"; // Import the PrivateRoute component
 import ForgotPassword from "./signup_login/ForgotPassword";
+import FilterStudentData from "./Student_data/Filter_student_data";
 
 function App() {
   useEffect(() => {
@@ -73,6 +74,11 @@ function App() {
         <Route
           path="/studentsWithEndedMonth"
           element={<PrivateRoute element={<ShowStudentsWithEndedMonth />} />}
+        />
+
+        <Route
+          path="/filterStudentData"
+          element={<PrivateRoute element={<FilterStudentData />} />}
         />
 
         <Route path="/home" element={<PrivateRoute element={<HomePage />} />} />
