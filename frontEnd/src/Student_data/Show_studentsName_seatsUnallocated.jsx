@@ -23,7 +23,7 @@ const ShowVacantSeats = () => {
         navigate
       );
       setStudents(data);
-      console.log("Students data:", data);
+      // console.log("Students data:", data);
 
       // Ensure that SeatNumber is treated as a string
       const seatNumbers = data
@@ -32,7 +32,7 @@ const ShowVacantSeats = () => {
         .map((seat) => seat.toString());
 
       setOccupiedSeats(seatNumbers);
-      console.log("Occupied seats from server:", seatNumbers);
+      // console.log("Occupied seats from server:", seatNumbers);
     } catch (error) {
       console.error("Error fetching occupied seats:", error);
     }

@@ -74,7 +74,6 @@ export const addStudentData = async (req, res) => {
         },
       });
 
-      console.log("Conflicting student:", conflictingStudent);
 
       if (conflictingStudent) {
         return res.status(409).json({

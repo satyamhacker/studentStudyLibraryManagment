@@ -24,11 +24,11 @@ const Login = () => {
         navigate
       ); // Use postRequest function
 
-      console.log("response received", response);
+      // console.log("response received", response);
 
       // Check if the login was successful based on response structure
       if (response && response.length > 0) {
-        console.log("test", response[1]);
+        // console.log("test", response[1]);
         const userData = response[0]; // Assuming the user data is the first element in the array
         alert("Login successful");
 
