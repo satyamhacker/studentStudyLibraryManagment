@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./signup_login/Login";
 import Signup from "./signup_login/Signup";
@@ -14,13 +14,12 @@ import PublicRoute from "./Student_data/PublicRoute"; // Import the PublicRoute 
 import PrivateRoute from "./Student_data/PrivateRoute"; // Import the PrivateRoute component
 import ForgotPassword from "./signup_login/ForgotPassword";
 import FilterStudentData from "./Student_data/Filter_student_data";
+import "./styles/darkMode.css"; // Import dark mode styles
 
 function App() {
-  useEffect(() => {
-    // Clear isLoggedIn from local storage on component mount
-    // localStorage.removeItem("isLoggedIn");
-    // alert("Session ended. You have been logged out.");
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
+  useEffect(() => {
     const handleBeforeUnload = (event) => {
       const confirmationMessage =
         "Are you sure you want to leave? Your session will end.";
@@ -36,53 +35,66 @@ function App() {
     };
   }, []);
 
+  const toggleDarkMode = () => {
+    setIsDarkMode((prevMode) => !prevMode);
+    document.body.classList.toggle("dark-mode", !isDarkMode);
+  };
+
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<PublicRoute element={<Login />} />} />
-        <Route path="/" element={<PublicRoute element={<Signup />} />} />
-        <Route
-          path="/forgotPassword"
-          element={<PublicRoute element={<ForgotPassword />} />}
-        />
+      <div className={isDarkMode ? "dark-mode" : ""}>
+        <button onClick={toggleDarkMode} className="toggle-dark-mode">
+          {isDarkMode ? "Light Mode" : "Dark Mode"}
+        </button>
+        <Routes>
+          <Route path="/login" element={<PublicRoute element={<Login />} />} />
+          <Route path="/" element={<PublicRoute element={<Signup />} />} />
+          <Route
+            path="/forgotPassword"
+            element={<PublicRoute element={<ForgotPassword />} />}
+          />
 
-        {/* Private Routes */}
-        <Route
-          path="/addStudent"
-          element={<PrivateRoute element={<AddStudent />} />}
-        />
-        <Route
-          path="/showStudentsData"
-          element={<PrivateRoute element={<ShowStudentData />} />}
-        />
-        <Route
-          path="/unallocatedStudentsSeats"
-          element={<PrivateRoute element={<UnallocatedStudentsSeat />} />}
-        />
-        <Route
-          path="/studentsWithDues"
-          element={<PrivateRoute element={<StudentWithDues />} />}
-        />
-        <Route
-          path="/studentsWithLocker"
-          element={<PrivateRoute element={<StudentsWithLocker />} />}
-        />
-        <Route
-          path="/StudentsWithoutAllocatedSeats"
-          element={<PrivateRoute element={<ShowVacantSeats />} />}
-        />
-        <Route
-          path="/studentsWithEndedMonth"
-          element={<PrivateRoute element={<ShowStudentsWithEndedMonth />} />}
-        />
+          {/* Private Routes */}
+          <Route
+            path="/addStudent"
+            element={<PrivateRoute element={<AddStudent />} />}
+          />
+          <Route
+            path="/showStudentsData"
+            element={<PrivateRoute element={<ShowStudentData />} />}
+          />
+          <Route
+            path="/unallocatedStudentsSeats"
+            element={<PrivateRoute element={<UnallocatedStudentsSeat />} />}
+          />
+          <Route
+            path="/studentsWithDues"
+            element={<PrivateRoute element={<StudentWithDues />} />}
+          />
+          <Route
+            path="/studentsWithLocker"
+            element={<PrivateRoute element={<StudentsWithLocker />} />}
+          />
+          <Route
+            path="/StudentsWithoutAllocatedSeats"
+            element={<PrivateRoute element={<ShowVacantSeats />} />}
+          />
+          <Route
+            path="/studentsWithEndedMonth"
+            element={<PrivateRoute element={<ShowStudentsWithEndedMonth />} />}
+          />
 
-        <Route
-          path="/filterStudentData"
-          element={<PrivateRoute element={<FilterStudentData />} />}
-        />
+          <Route
+            path="/filterStudentData"
+            element={<PrivateRoute element={<FilterStudentData />} />}
+          />
 
-        <Route path="/home" element={<PrivateRoute element={<HomePage />} />} />
-      </Routes>
+          <Route
+            path="/home"
+            element={<PrivateRoute element={<HomePage />} />}
+          />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
