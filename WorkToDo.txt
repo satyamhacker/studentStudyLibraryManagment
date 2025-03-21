@@ -3,6 +3,9 @@
 
 ===problem========
 
+1.if user is already created then it should show user 
+already created ...
+
 NO problem everytheing is done only regres testing is left...
 
 ==================================================================
