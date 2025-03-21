@@ -1,10 +1,12 @@
-import AddData from "../Models/Add_Student_Data.mjs"; // Adjust the path as necessary
+import {Student} from '../Models/modelsImportExport.mjs';
+
+
 
 // Controller to fetch student data
 export const fetchStudentsData = async (req, res) => {
   try {
     // Fetch all student data from the database
-    const students = await AddData.find();
+    const students = await Student.findAll();
 
     // If no students found, return an empty array
     if (!students || students.length === 0) {
@@ -14,7 +16,7 @@ export const fetchStudentsData = async (req, res) => {
     // Send the fetched student data as response
     res.status(200).json(students);
   } catch (error) {
-    console.error("Error fetching student data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error fetching student data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };

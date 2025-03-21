@@ -8,12 +8,20 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
-import { IconButton } from "@mui/material";
+import { IconButton, TextField, MenuItem, InputAdornment } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "../styles/neonTable.css"; // Custom CSS file for neon effects
+import handleTokenError from "../utils/handleTokenError"; // Import the utility function
+import { getRequest, deleteRequest, updateRequest } from "../utils/api"; // Import the utility functions
+
+const paymentModeOptions = [
+  { label: "Online", value: "online" },
+  { label: "Cash", value: "cash" },
+];
 
 const ShowStudentData = () => {
   const [students, setStudents] = useState([]);
@@ -22,70 +30,116 @@ const ShowStudentData = () => {
   const [currentStudent, setCurrentStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [studentToDelete, setStudentToDelete] = useState(null);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  // Fetch student data from backend
   useEffect(() => {
     fetchStudentData();
   }, []);
 
+  const timeOptions = [
+    { label: "06:00 - 10:00", value: "06:00-10:00" },
+    { label: "10:00 - 14:00", value: "10:00-14:00" },
+    { label: "14:00 - 18:00", value: "14:00-18:00" },
+    { label: "18:00 - 22:00", value: "18:00-22:00" },
+    { label: "22:00 - 06:00", value: "22:00-06:00" },
+    { label: "Reserved", value: "reserved" },
+  ];
+
   const fetchStudentData = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents");
-      if (response.data.length === 0) {
+      const data = await getRequest(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
+        navigate
+      );
+      // console.log("response.data: ", data);
+
+      if (data.length === 0) {
         alert("Please add Student data.");
         navigate("/addStudent");
       } else {
-        setStudents(response.data);
+        setStudents(data);
       }
     } catch (error) {
       console.error("Error fetching students:", error);
     }
   };
 
-  // Handle deleting a student
   const deleteStudent = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/deleteStudent/${id}`);
-      fetchStudentData(); // Refresh the list after deletion
-      setShowDeleteModal(false); // Close the delete confirmation modal
+      await deleteRequest(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/deleteStudent/${id}`,
+        navigate
+      );
+      fetchStudentData();
+      setShowDeleteModal(false);
     } catch (error) {
       console.error("Error deleting student:", error);
     }
   };
 
-  // Handle showing the edit modal
   const showEditModalForStudent = (student) => {
     setCurrentStudent(student);
+    setErrors({});
     setShowEditModal(true);
   };
 
-  // Handle showing the delete confirmation modal
   const confirmDeleteStudent = (student) => {
     setStudentToDelete(student);
     setShowDeleteModal(true);
   };
 
-  // Handle updating a student
   const handleUpdateStudent = async () => {
     try {
-      await axios.put(
-        `http://localhost:3000/updateStudent/${currentStudent._id}`,
-        currentStudent
+      if (!currentStudent?.TimeSlots || currentStudent.TimeSlots.length === 0) {
+        setErrors({ TimeSlots: "At least one time slot is required" });
+        return;
+      }
+
+      await updateRequest(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/updateStudent/${
+          currentStudent.id
+        }`,
+        currentStudent,
+        navigate
       );
       setShowEditModal(false);
-      fetchStudentData(); // Refresh the list after update
+      fetchStudentData();
     } catch (error) {
       console.error("Error updating student:", error);
+      if (error.response?.data?.error === "Validation failed") {
+        setErrors({ ...errors, api: error.response.data.details.join(", ") });
+      } else if (error.response?.status === 409) {
+        const {
+          error: errorMessage,
+          freeTimeSlots,
+          occupiedBy,
+        } = error.response.data;
+        alert(
+          `${errorMessage} Occupied by: ${occupiedBy}. Free time slots: ${freeTimeSlots.join(
+            ", "
+          )}`
+        );
+      }
     }
   };
 
-  // Handle search functionality
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  // Filter students based on the search term
+  const handlePaymentModeChange = (e) => {
+    const { value } = e.target;
+    setCurrentStudent((prev) => ({
+      ...prev,
+      PaymentMode: value,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      PaymentMode: "",
+    }));
+  };
+
   const filteredStudents = students.filter((student) =>
     Object.values(student).some((value) =>
       value
@@ -94,112 +148,179 @@ const ShowStudentData = () => {
     )
   );
 
-  // Format the date for the table display (MM/DD/YYYY)
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return isNaN(date.getTime()) ? "Invalid Date" : date.toLocaleDateString();
   };
 
-  // Format the date for the input[type="date"] (YYYY-MM-DD)
   const formatDateForInput = (dateString) => {
     const date = new Date(dateString);
     return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
   };
 
+  const handleTimeChange = (e) => {
+    const selectedTimes = e.target.value;
+    setCurrentStudent((prev) => ({
+      ...prev,
+      TimeSlots: selectedTimes,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      TimeSlots:
+        selectedTimes.length > 0 ? "" : "At least one time slot is required",
+    }));
+  };
+
+  const exportStudentDataToExcel = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/exportStudents`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "students_data.xlsx");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error exporting student data:", error);
+      alert("Error exporting student data");
+    }
+  };
+
   return (
-    <Container>
-      <Row>
+    <Container className="mt-5">
+      <h1 className="neon-header text-center mb-4">All Students Data</h1>
+      <Row className="mb-3">
         <Col md={8}>
-          <h1 className="bg-blue-700">All Students Data</h1>
-        </Col>
-        <Col md={4}>
-          <Form inline="true">
-            <Form.Control
-              type="text"
+          <div className="neon-search-container">
+            <TextField
+              variant="outlined"
               placeholder="Search by any field..."
               value={searchTerm}
               onChange={handleSearch}
-              className="border-2 border-blue-500"
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon className="neon-icon" />
+                  </InputAdornment>
+                ),
+              }}
+              className="neon-input"
             />
-            <IconButton>
-              <SearchIcon />
-            </IconButton>
-          </Form>
+          </div>
+        </Col>
+        <Col md={4} className="text-right">
+          <Button
+            className="neon-button bg-pink-500 text-white"
+            onClick={exportStudentDataToExcel}
+          >
+            Export Student Data to Excel
+          </Button>
         </Col>
       </Row>
 
       {students.length === 0 ? (
-        <p>No student data available.</p>
+        <p className="text-center">No student data available.</p>
       ) : (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>Admission Number</th>
-              <th>Admission Date</th>
-              <th>Student Name</th>
-              <th>Address</th>
-              <th>Contact Number</th>
-              <th>Time</th>
-              <th>Shift</th>
-              <th>Seat Number</th>
-              <th>Amount Paid</th>
-              <th>Amount Due</th>
-              <th>Locker Number</th>
-              <th>Fees Paid Till Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredStudents.map((student) => (
-              <tr key={student._id}>
-                <td>{student.AdmissionNumber}</td>
-                <td>{formatDate(student.AdmissionDate)}</td>
-                <td>{student.StudentName}</td>
-                <td>{student.Address}</td>
-                <td>{student.ContactNumber}</td>
-                <td>{student.Time}</td>
-                <td>{student.Shift}</td>
-                <td>{student.SeatNumber}</td>
-                <td>{"₹" + student.AmountPaid}</td>
-                <td>{"₹" + student.AmountDue}</td>
-                <td>{student.LockerNumber}</td>
-                <td>{formatDate(student.FeesPaidTillDate)}</td>
-                <td>
-                  <IconButton onClick={() => showEditModalForStudent(student)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => confirmDeleteStudent(student)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </td>
+        <div className="neon-table-container">
+          <Table striped bordered hover responsive className="neon-table">
+            <thead>
+              <tr>
+                <th>Registration Number</th>
+                <th>Admission Date</th>
+                <th>Student Name</th>
+                <th>Father's Name</th>
+                <th>Address</th>
+                <th>Contact Number</th>
+                <th>Time Slots</th>
+                <th>Shift</th>
+                <th>Seat Number</th>
+                <th>Amount Paid</th>
+                <th>Amount Due</th>
+                <th>Locker Number</th>
+                <th>Fees Paid Till Date</th>
+                <th>Payment Mode</th>
+                <th>Admission Amount</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {filteredStudents.map((student) => (
+                <tr key={student.id}>
+                  <td>{student.RegistrationNumber}</td>
+                  <td>{formatDate(student.AdmissionDate)}</td>
+                  <td>{student.StudentName}</td>
+                  <td>{student.FatherName}</td>
+                  <td>{student.Address}</td>
+                  <td>{student.ContactNumber}</td>
+                  <td>{student.TimeSlots.join(", ")}</td>
+                  <td>{student.Shift}</td>
+                  <td>{student.SeatNumber}</td>
+                  <td>{"₹" + student.AmountPaid}</td>
+                  <td>{"₹" + (student.AmountDue || "0")}</td>
+                  <td>{student.LockerNumber}</td>
+                  <td>{formatDate(student.FeesPaidTillDate)}</td>
+                  <td>{student.PaymentMode}</td>
+                  <td>{"₹" + student.AdmissionAmount}</td>
+                  <td>
+                    <IconButton
+                      onClick={() => showEditModalForStudent(student)}
+                      className="neon-icon-button"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => confirmDeleteStudent(student)}
+                      className="neon-icon-button"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       )}
 
       {/* Edit Student Modal */}
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        dialogClassName="neon-modal"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Edit Student Data</Modal.Title>
+          <Modal.Title className="neon-modal-title">
+            Edit Student Data
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="AdmissionNumber">
-              <Form.Label>Admission Number</Form.Label>
+            <Form.Group controlId="RegistrationNumber" className="mb-3">
+              <Form.Label>Registration Number</Form.Label>
               <Form.Control
                 type="text"
-                value={currentStudent?.AdmissionNumber || ""}
+                value={currentStudent?.RegistrationNumber || ""}
                 onChange={(e) =>
                   setCurrentStudent((prev) => ({
                     ...prev,
-                    AdmissionNumber: e.target.value,
+                    RegistrationNumber: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="AdmissionDate">
+            <Form.Group controlId="AdmissionDate" className="mb-3">
               <Form.Label>Admission Date</Form.Label>
               <Form.Control
                 type="date"
@@ -214,10 +335,11 @@ const ShowStudentData = () => {
                     AdmissionDate: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="StudentName">
+            <Form.Group controlId="StudentName" className="mb-3">
               <Form.Label>Student Name</Form.Label>
               <Form.Control
                 type="text"
@@ -228,10 +350,26 @@ const ShowStudentData = () => {
                     StudentName: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="Address">
+            <Form.Group controlId="FatherName" className="mb-3">
+              <Form.Label>Father's Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={currentStudent?.FatherName || ""}
+                onChange={(e) =>
+                  setCurrentStudent((prev) => ({
+                    ...prev,
+                    FatherName: e.target.value,
+                  }))
+                }
+                className="neon-input"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="Address" className="mb-3">
               <Form.Label>Address</Form.Label>
               <Form.Control
                 type="text"
@@ -242,10 +380,11 @@ const ShowStudentData = () => {
                     Address: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="ContactNumber">
+            <Form.Group controlId="ContactNumber" className="mb-3">
               <Form.Label>Contact Number</Form.Label>
               <Form.Control
                 type="text"
@@ -256,24 +395,34 @@ const ShowStudentData = () => {
                     ContactNumber: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="Time">
-              <Form.Label>Time</Form.Label>
-              <Form.Control
-                type="text"
-                value={currentStudent?.Time || ""}
-                onChange={(e) =>
-                  setCurrentStudent((prev) => ({
-                    ...prev,
-                    Time: e.target.value,
-                  }))
-                }
-              />
+            <Form.Group controlId="TimeSlots" className="mb-3">
+              <Form.Label>Time Slots</Form.Label>
+              <TextField
+                select
+                variant="outlined"
+                name="TimeSlots"
+                value={currentStudent?.TimeSlots || []}
+                onChange={handleTimeChange}
+                fullWidth
+                required
+                SelectProps={{ multiple: true }}
+                error={!!errors.TimeSlots}
+                helperText={errors.TimeSlots}
+                className="neon-input"
+              >
+                {timeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Form.Group>
 
-            <Form.Group controlId="Shift">
+            <Form.Group controlId="Shift" className="mb-3">
               <Form.Label>Shift</Form.Label>
               <Form.Control
                 type="text"
@@ -284,10 +433,11 @@ const ShowStudentData = () => {
                     Shift: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="SeatNumber">
+            <Form.Group controlId="SeatNumber" className="mb-3">
               <Form.Label>Seat Number</Form.Label>
               <Form.Control
                 type="text"
@@ -298,10 +448,11 @@ const ShowStudentData = () => {
                     SeatNumber: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="AmountPaid">
+            <Form.Group controlId="AmountPaid" className="mb-3">
               <Form.Label>Amount Paid</Form.Label>
               <Form.Control
                 type="number"
@@ -312,10 +463,11 @@ const ShowStudentData = () => {
                     AmountPaid: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="AmountDue">
+            <Form.Group controlId="AmountDue" className="mb-3">
               <Form.Label>Amount Due</Form.Label>
               <Form.Control
                 type="number"
@@ -326,10 +478,11 @@ const ShowStudentData = () => {
                     AmountDue: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="LockerNumber">
+            <Form.Group controlId="LockerNumber" className="mb-3">
               <Form.Label>Locker Number</Form.Label>
               <Form.Control
                 type="text"
@@ -340,10 +493,11 @@ const ShowStudentData = () => {
                     LockerNumber: e.target.value,
                   }))
                 }
+                className="neon-input"
               />
             </Form.Group>
 
-            <Form.Group controlId="FeesPaidTillDate">
+            <Form.Group controlId="FeesPaidTillDate" className="mb-3">
               <Form.Label>Fees Paid Till Date</Form.Label>
               <Form.Control
                 type="date"
@@ -358,39 +512,89 @@ const ShowStudentData = () => {
                     FeesPaidTillDate: e.target.value,
                   }))
                 }
+                className="neon-input"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="PaymentMode" className="mb-3">
+              <Form.Label>Payment Mode</Form.Label>
+              <TextField
+                select
+                variant="outlined"
+                name="PaymentMode"
+                value={currentStudent?.PaymentMode || ""}
+                onChange={handlePaymentModeChange}
+                fullWidth
+                required
+                error={!!errors.PaymentMode}
+                helperText={errors.PaymentMode}
+                className="neon-input"
+              >
+                {paymentModeOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Form.Group>
+            <Form.Group controlId="AdmissionAmount" className="mb-3">
+              <Form.Label>Admission Amount</Form.Label>
+              <Form.Control
+                type="number"
+                value={currentStudent?.AdmissionAmount || ""}
+                onChange={(e) =>
+                  setCurrentStudent((prev) => ({
+                    ...prev,
+                    AdmissionAmount: e.target.value,
+                  }))
+                }
+                className="neon-input"
               />
             </Form.Group>
           </Form>
+          {errors.api && <p className="text-danger">{errors.api}</p>}
         </Modal.Body>
         <Modal.Footer>
-          <Button className="bg-black" onClick={() => setShowEditModal(false)}>
+          <Button
+            className="neon-button bg-black text-white"
+            onClick={() => setShowEditModal(false)}
+          >
             Close
           </Button>
-          <Button className="bg-blue-800" onClick={handleUpdateStudent}>
+          <Button
+            className="neon-button bg-blue-800 text-white"
+            onClick={handleUpdateStudent}
+          >
             Save Changes
           </Button>
         </Modal.Footer>
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+      <Modal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        dialogClassName="neon-modal"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Deletion</Modal.Title>
+          <Modal.Title className="neon-modal-title">
+            Confirm Deletion
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="neon-modal-body">
           Are you sure you want to delete the student{" "}
           {studentToDelete?.StudentName}?
         </Modal.Body>
         <Modal.Footer>
           <Button
-            className="bg-black"
+            className="neon-button bg-black text-white"
             onClick={() => setShowDeleteModal(false)}
           >
             Cancel
           </Button>
           <Button
-            className="bg-red-700"
-            onClick={() => deleteStudent(studentToDelete?._id)}
+            className="neon-button bg-red-700 text-white"
+            onClick={() => deleteStudent(studentToDelete?.id)}
           >
             Delete
           </Button>

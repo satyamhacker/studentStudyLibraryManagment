@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
-import axios from "axios"; // Import Axios
 import { Link, useNavigate } from "react-router-dom";
+import { postRequest } from "../utils/api"; // Import the postRequest function
 
 const Signup = () => {
   const page = " Library Signup Page";
@@ -25,16 +25,17 @@ const Signup = () => {
     setErrorMessage(""); // Clear previous error message
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/signup",
-        formData
-      ); // Replace with your actual API URL
+      const response = await postRequest(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/signup`,
+        formData,
+        navigate
+      );
 
       // Check if the response indicates success
-      if (response.status === 201 && response.data === "User created") {
+      if (response === "User created") {
         alert("User created. Now you can login.");
         navigate("/login"); // Navigate to login page
-      } else if (response.status === 409) {
+      } else if (response.error === "User already exists") {
         setErrorMessage("User already exists. Please use a different email."); // Handle conflict error
       } else {
         setErrorMessage(

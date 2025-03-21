@@ -1,0 +1,30 @@
+// =========below json debugger is for nodemon express=============
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Nodemon",
+      "restart": true,
+      "processId": "${command:PickProcess}",
+      "protocol": "inspector"
+    }
+  ]
+}
+
+// ============below debugger json code is for react vite===============
+
+// {
+//   "version": "0.2.0",
+//   "configurations": [
+//     {
+//       "type": "chrome",
+//       "request": "launch",
+//       "name": "Debug React with Vite",
+//       "url": "http :// localhost :5173",
+//       "webRoot": "$ { workspaceFolder }/ src",
+//       "sourceMaps": true
+//     }
+//   ]
+// }

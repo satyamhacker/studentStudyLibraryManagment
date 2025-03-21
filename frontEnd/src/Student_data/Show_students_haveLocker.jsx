@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Modal, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
+import "../styles/neonLockers.css"; // Custom CSS file for neon effects
+import { getRequest } from "../utils/api"; // Import the utility functions
 
 const ShowLockers = () => {
   const [occupiedLockers, setOccupiedLockers] = useState([]);
-  const [students, setStudents] = useState([]); // To hold all students data
+  const [students, setStudents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const navigate = useNavigate(); // Define navigate
 
   // Fetch occupied locker data from backend
   useEffect(() => {
@@ -15,33 +19,35 @@ const ShowLockers = () => {
 
   const fetchOccupiedLockers = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/getStudents"); // Adjust the route accordingly
-      setStudents(response.data); // Store all student data
+      const data = await getRequest(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
+        navigate
+      );
+      setStudents(data);
 
-      // Extract locker numbers from students data
-      const lockerNumbers = response.data
+      const lockerNumbers = data
         .map((student) => student.LockerNumber)
-        .filter((locker) => locker !== null && locker !== undefined) // Filter out null or undefined LockerNumbers
+        .filter((locker) => locker !== null && locker !== undefined)
         .map((locker) => locker.toString());
 
       setOccupiedLockers(lockerNumbers);
-      console.log("Occupied lockers from server:", lockerNumbers); // Log the occupied lockers
+      // console.log("Occupied lockers from server:", lockerNumbers);
     } catch (error) {
       console.error("Error fetching occupied lockers:", error);
     }
   };
 
-  // Create an array of locker numbers from 1 to 30
-  const totalLockers = 30;
+  // Create an array of locker numbers from 1 to 100
+  const totalLockers = 100;
   const lockers = Array.from({ length: totalLockers }, (_, index) => index + 1);
 
   // Handle locker click to show modal
   const handleLockerClick = (lockerNumber) => {
-    const student = students.find((s) => s.LockerNumber === lockerNumber);
-    console.log(student);
+    const student = students.find(
+      (s) => s.LockerNumber === lockerNumber.toString()
+    );
     if (student) {
       setSelectedStudent(student);
-      console.log(student);
       setShowModal(true);
     }
   };
@@ -52,53 +58,57 @@ const ShowLockers = () => {
     setSelectedStudent(null);
   };
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return isNaN(date.getTime())
+      ? "Invalid Date"
+      : date.toLocaleDateString("en-US");
+  };
+
   return (
-    <Container>
-      <h2 className="bg-yellow-300 my-4">Locker Allocation</h2>
-      <Row>
-        {lockers.map((lockerNumber) => (
-          <Col
-            key={lockerNumber}
-            xs={3} // Change this value based on how many boxes you want per row
-            className="d-flex justify-content-center align-items-center"
-          >
-            <div
-              onClick={() =>
-                occupiedLockers.includes(lockerNumber.toString()) &&
-                handleLockerClick(lockerNumber)
-              }
-              style={{
-                width: "50px",
-                height: "50px",
-                backgroundColor: occupiedLockers.includes(
-                  lockerNumber.toString()
-                )
-                  ? "green" // Color for occupied lockers
-                  : "white", // Color for vacant lockers
-                border: "1px solid black",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: "5px",
-                margin: "5px",
-                cursor: occupiedLockers.includes(lockerNumber.toString())
-                  ? "pointer"
-                  : "default", // Change cursor based on locker status
-                transition: "background-color 0.3s", // Smooth transition effect
-              }}
+    <Container className="mt-5">
+      <h2 className="neon-header text-center mb-4">Locker Allocation</h2>
+      <div className="neon-locker-container">
+        <Row>
+          {lockers.map((lockerNumber) => (
+            <Col
+              key={lockerNumber}
+              xs={3}
+              sm={2}
+              md={1}
+              className="d-flex justify-content-center align-items-center mb-3"
             >
-              {lockerNumber}
-            </div>
-          </Col>
-        ))}
-      </Row>
+              <div
+                onClick={() =>
+                  occupiedLockers.includes(lockerNumber.toString()) &&
+                  handleLockerClick(lockerNumber)
+                }
+                className={`neon-locker ${
+                  occupiedLockers.includes(lockerNumber.toString())
+                    ? "occupied"
+                    : "unoccupied"
+                }`}
+              >
+                {lockerNumber}
+              </div>
+            </Col>
+          ))}
+        </Row>
+      </div>
 
       {/* Modal for displaying student details */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        dialogClassName="neon-modal"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Student Details</Modal.Title>
+          <Modal.Title className="neon-modal-title">
+            Student Details
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="neon-modal-body">
           {selectedStudent && (
             <div>
               <p>
@@ -106,16 +116,15 @@ const ShowLockers = () => {
               </p>
               <p>
                 <strong>Date Of Admission:</strong>{" "}
-                {new Date(selectedStudent.AdmissionDate).toLocaleDateString(
-                  "en-US"
-                )}{" "}
-                {/* Format the date */}
+                {formatDate(selectedStudent.AdmissionDate)}
               </p>
               <p>
-                <strong>Admission Number:</strong>{" "}
-                {selectedStudent.AdmissionNumber}
+                <strong>Registration Number:</strong>{" "}
+                {selectedStudent.RegistrationNumber}
               </p>
-
+              <p>
+                <strong>Father's Name:</strong> {selectedStudent.FatherName}
+              </p>
               <p>
                 <strong>Address:</strong> {selectedStudent.Address}
               </p>
@@ -123,10 +132,14 @@ const ShowLockers = () => {
                 <strong>Contact Number:</strong> {selectedStudent.ContactNumber}
               </p>
               <p>
-                <strong>Time:</strong> {selectedStudent.Time}
+                <strong>Time Slots:</strong>{" "}
+                {selectedStudent.TimeSlots.join(", ")}
               </p>
               <p>
                 <strong>Shift:</strong> {selectedStudent.Shift}
+              </p>
+              <p>
+                <strong>Seat Number:</strong> {selectedStudent.SeatNumber}
               </p>
               <p>
                 <strong>Locker Number:</strong> {selectedStudent.LockerNumber}
@@ -135,20 +148,27 @@ const ShowLockers = () => {
                 <strong>Amount Paid:</strong> ₹{selectedStudent.AmountPaid}
               </p>
               <p>
-                <strong>Amount Due:</strong> ₹{selectedStudent.AmountDue}
+                <strong>Amount Due:</strong> ₹{selectedStudent.AmountDue || "0"}
               </p>
               <p>
                 <strong>Fees Paid Till:</strong>{" "}
-                {new Date(selectedStudent.FeesPaidTillDate).toLocaleDateString(
-                  "en-US"
-                )}{" "}
-                {/* Format the date */}
+                {formatDate(selectedStudent.FeesPaidTillDate)}
+              </p>
+              <p>
+                <strong>Payment Mode:</strong> {selectedStudent.PaymentMode}
+              </p>
+              <p>
+                <strong>Admission Amount:</strong> ₹
+                {selectedStudent.AdmissionAmount}
               </p>
             </div>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button className="bg-black" onClick={handleCloseModal}>
+          <Button
+            className="neon-button bg-black text-white"
+            onClick={handleCloseModal}
+          >
             Close
           </Button>
         </Modal.Footer>
