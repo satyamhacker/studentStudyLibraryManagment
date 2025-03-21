@@ -23,6 +23,7 @@ const AddStudent = () => {
     AmountDue: "",
     LockerNumber: "",
     PaymentMode: "", // Add PaymentMode to the state
+    AdmissionAmount: "", // Add AdmissionAmount to the state
   });
 
   const [errors, setErrors] = useState({});
@@ -115,6 +116,10 @@ const AddStudent = () => {
       newErrors.PaymentMode = "Payment Mode is required";
     }
 
+    if (!studentData.AdmissionAmount) {
+      newErrors.AdmissionAmount = "Admission Amount is required";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -131,6 +136,7 @@ const AddStudent = () => {
         ...studentData,
         AmountPaid: studentData.AmountPaid.replace("₹", "").trim(),
         AmountDue: studentData.AmountDue.replace("₹", "").trim(),
+        AdmissionAmount: studentData.AdmissionAmount.replace("₹", "").trim(), // Include AdmissionAmount
       };
 
       // console.log("Data being sent to backend:", formattedData);
@@ -166,6 +172,7 @@ const AddStudent = () => {
         AmountDue: "",
         LockerNumber: "",
         PaymentMode: "",
+        AdmissionAmount: "",
       });
       setErrors({});
     } catch (error) {
@@ -492,6 +499,34 @@ const AddStudent = () => {
                 className="neon-input"
               />
             </Form.Group>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-4">
+                <Form.Label>Admission Amount</Form.Label>
+                <TextField
+                  variant="outlined"
+                  name="AdmissionAmount"
+                  value={studentData.AdmissionAmount}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  placeholder="Enter Admission Amount"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PaymentIcon />
+                        <span className="mr-2">₹</span>
+                      </InputAdornment>
+                    ),
+                  }}
+                  error={!!errors.AdmissionAmount}
+                  helperText={errors.AdmissionAmount}
+                  className="neon-input"
+                />
+              </Form.Group>
+            </Col>
           </Row>
 
           <Button variant="primary" type="submit" className="neon-button w-100">
