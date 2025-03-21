@@ -32,10 +32,13 @@ export const exportStudentDataToExcel = async (req, res) => {
       { header: 'Amount Due', key: 'AmountDue', width: 15 },
       { header: 'Locker Number', key: 'LockerNumber', width: 15 },
       { header: 'Fees Paid Till Date', key: 'FeesPaidTillDate', width: 20 },
+      { header: 'Payment Mode', key: 'PaymentMode', width: 15 },
+      { header: 'Admission Amount', key: 'AdmissionAmount', width: 15 },
+      { header: 'Payment Expected Date', key: 'PaymentExpectedDate', width: 20 }
     ];
 
     students.forEach(student => {
-      worksheet.addRow({
+      const rowData = {
         RegistrationNumber: student.RegistrationNumber,
         AdmissionDate: student.AdmissionDate,
         StudentName: student.StudentName,
@@ -49,7 +52,15 @@ export const exportStudentDataToExcel = async (req, res) => {
         AmountDue: student.AmountDue,
         LockerNumber: student.LockerNumber,
         FeesPaidTillDate: student.FeesPaidTillDate,
-      });
+        PaymentMode: student.PaymentMode,
+        AdmissionAmount: student.AdmissionAmount,
+      };
+
+      if (student.PaymentExpectedDateChanged > 0 && student.PaymentExpectedDate) {
+        rowData.PaymentExpectedDate = student.PaymentExpectedDate;
+      }
+
+      worksheet.addRow(rowData);
     });
 
     const exportDir = path.join(__dirname, '..', 'exportsStudentData');
