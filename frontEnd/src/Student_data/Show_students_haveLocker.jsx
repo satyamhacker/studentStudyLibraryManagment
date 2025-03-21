@@ -157,6 +157,10 @@ const ShowLockers = () => {
               <p>
                 <strong>Payment Mode:</strong> {selectedStudent.PaymentMode}
               </p>
+              <p>
+                <strong>Admission Amount:</strong> ₹
+                {selectedStudent.AdmissionAmount}
+              </p>
             </div>
           )}
         </Modal.Body>

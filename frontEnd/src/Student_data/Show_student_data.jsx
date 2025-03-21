@@ -249,6 +249,7 @@ const ShowStudentData = () => {
                 <th>Locker Number</th>
                 <th>Fees Paid Till Date</th>
                 <th>Payment Mode</th>
+                <th>Admission Amount</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -269,6 +270,7 @@ const ShowStudentData = () => {
                   <td>{student.LockerNumber}</td>
                   <td>{formatDate(student.FeesPaidTillDate)}</td>
                   <td>{student.PaymentMode}</td>
+                  <td>{"₹" + student.AdmissionAmount}</td>
                   <td>
                     <IconButton
                       onClick={() => showEditModalForStudent(student)}
@@ -534,6 +536,20 @@ const ShowStudentData = () => {
                   </MenuItem>
                 ))}
               </TextField>
+            </Form.Group>
+            <Form.Group controlId="AdmissionAmount" className="mb-3">
+              <Form.Label>Admission Amount</Form.Label>
+              <Form.Control
+                type="number"
+                value={currentStudent?.AdmissionAmount || ""}
+                onChange={(e) =>
+                  setCurrentStudent((prev) => ({
+                    ...prev,
+                    AdmissionAmount: e.target.value,
+                  }))
+                }
+                className="neon-input"
+              />
             </Form.Group>
           </Form>
           {errors.api && <p className="text-danger">{errors.api}</p>}

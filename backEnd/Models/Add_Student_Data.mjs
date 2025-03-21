@@ -125,6 +125,14 @@ const Student = sequelize.define('Student', {
         notEmpty: { msg: 'Payment Mode is required' },
       },
       },
+  AdmissionAmount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'Admission Amount is required' },
+      isDecimal: { msg: 'Admission Amount must be a valid number' },
+    },
+  },
     }, {
       tableName: 'students', // Explicit table name
   timestamps: true, // Adds createdAt and updatedAt fields

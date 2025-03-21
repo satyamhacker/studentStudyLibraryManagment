@@ -93,6 +93,8 @@ const ShowStudentsWithEndedMonth = () => {
           navigate
         );
         console.log("Student data updated successfully");
+        alert("Student PaymentExpectedDate updated successfully");
+        window.location.reload();
       } catch (error) {
         console.error("Error updating student data:", error);
       }
@@ -227,6 +229,10 @@ const ShowStudentsWithEndedMonth = () => {
               </p>
               <p>
                 <strong>Payment Mode:</strong> {selectedStudent.PaymentMode}
+              </p>
+              <p>
+                <strong>Admission Amount:</strong> ₹
+                {selectedStudent.AdmissionAmount}
               </p>
               <Form.Group controlId="paymentExpectedDate" className="mb-3">
                 <Form.Label>Payment Expected Date</Form.Label>

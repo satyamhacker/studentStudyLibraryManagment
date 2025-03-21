@@ -25,6 +25,7 @@ const FilterStudentData = () => {
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [totalAmountPaid, setTotalAmountPaid] = useState(0); // State for total amount paid
   const [totalAmountDue, setTotalAmountDue] = useState(0); // State for total amount due
+  const [totalAdmissionAmount, setTotalAdmissionAmount] = useState(0); // State for total admission amount
 
   const navigate = useNavigate(); // Define navigate
 
@@ -73,8 +74,13 @@ const FilterStudentData = () => {
       (sum, student) => sum + parseFloat(student.AmountDue || 0),
       0
     );
+    const totalAdmission = data.reduce(
+      (sum, student) => sum + parseFloat(student.AdmissionAmount || 0),
+      0
+    );
     setTotalAmountPaid(totalPaid);
     setTotalAmountDue(totalDue);
+    setTotalAdmissionAmount(totalAdmission);
   };
 
   const months = [
@@ -271,6 +277,16 @@ const FilterStudentData = () => {
         >
           <p className="neon-text">Total Amount Due: ₹{totalAmountDue}</p>
         </Col>
+        <Col
+          xs={12}
+          sm={6}
+          md={4}
+          className="text-center mt-2 mt-sm-0 bg-blue-200"
+        >
+          <p className="neon-text">
+            Total Admission Amount: ₹{totalAdmissionAmount}
+          </p>
+        </Col>
       </Row>
 
       {/* Display filtered data in a table */}
@@ -294,6 +310,7 @@ const FilterStudentData = () => {
                 <th>Locker Number</th>
                 <th>Fees Paid Till Date</th>
                 <th>Payment Mode</th>
+                <th>Admission Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -317,6 +334,7 @@ const FilterStudentData = () => {
                     {new Date(student.FeesPaidTillDate).toLocaleDateString()}
                   </td>
                   <td>{student.PaymentMode}</td>
+                  <td>{"₹" + student.AdmissionAmount}</td>
                 </tr>
               ))}
             </tbody>

@@ -17,7 +17,8 @@ export const addStudentData = async (req, res) => {
       AmountPaid,
       AmountDue,
       LockerNumber,
-      PaymentMode
+      PaymentMode,
+      AdmissionAmount,
     } = req.body;
 
     // Validate required fields
@@ -32,7 +33,8 @@ export const addStudentData = async (req, res) => {
       !Shift ||
       !FeesPaidTillDate ||
       !AmountPaid ||
-      !PaymentMode
+      !PaymentMode ||
+      !AdmissionAmount
     ) {
       return res.status(400).json({ error: 'All required fields must be provided and TimeSlots must be a non-empty array' });
     }
@@ -115,6 +117,7 @@ export const addStudentData = async (req, res) => {
       AmountDue: AmountDue ? parseFloat(AmountDue) : null,
       LockerNumber,
       PaymentMode,
+      AdmissionAmount: parseFloat(AdmissionAmount),
     });
 
     // Respond with the newly created student data

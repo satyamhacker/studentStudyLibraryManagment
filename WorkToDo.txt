@@ -3,12 +3,7 @@
 
 ===problem========
 
-1.if user is already created then it should show user 
-already created ...
 
-2.in studentsWithEndedMonth page if i update it 
-paymentExpectedDate then after updating alert should be 
-shown...
 
 NO problem everytheing is done only regres testing is left...
 
