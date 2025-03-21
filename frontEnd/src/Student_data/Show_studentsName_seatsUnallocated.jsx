@@ -44,12 +44,12 @@ const ShowVacantSeats = () => {
 
   // Handle seat click to show modal
   const handleSeatClick = (seatNumber) => {
-    console.log("Seat clicked:", students);
+    // console.log("Seat clicked:", students);
     const selectedStudents = students.filter(
       (s) => s.SeatNumber === seatNumber.toString()
     );
     if (selectedStudents.length > 0) {
-      console.log("Selected students:", selectedStudents);
+      // console.log("Selected students:", selectedStudents);
       setSelectedStudents(selectedStudents);
       setShowModal(true);
     } else {

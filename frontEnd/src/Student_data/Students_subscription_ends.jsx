@@ -93,6 +93,8 @@ const ShowStudentsWithEndedMonth = () => {
           navigate
         );
         console.log("Student data updated successfully");
+        alert("Student PaymentExpectedDate updated successfully");
+        window.location.reload();
       } catch (error) {
         console.error("Error updating student data:", error);
       }
