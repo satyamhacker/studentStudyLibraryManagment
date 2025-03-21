@@ -31,7 +31,7 @@ const ShowLockers = () => {
         .map((locker) => locker.toString());
 
       setOccupiedLockers(lockerNumbers);
-      console.log("Occupied lockers from server:", lockerNumbers);
+      // console.log("Occupied lockers from server:", lockerNumbers);
     } catch (error) {
       console.error("Error fetching occupied lockers:", error);
     }

@@ -111,7 +111,7 @@ const Student = sequelize.define('Student', {
   },
   PaymentExpectedDateChanged: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
      // Default to 0
       validate: {
         isInt: { msg: 'Payment Expected Date Changed must be an integer' },

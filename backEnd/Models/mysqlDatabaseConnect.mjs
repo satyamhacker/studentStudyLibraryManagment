@@ -5,11 +5,11 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '../.env' });
 
 // Log environment variables for debugging
-console.log('DB_NAME:', process.env.DB_NAME);
-console.log('DB_USERNAME:', process.env.DB_USERNAME);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_PORT:', process.env.DB_PORT);
+// console.log('DB_NAME:', process.env.DB_NAME);
+// console.log('DB_USERNAME:', process.env.DB_USERNAME);
+// console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+// console.log('DB_HOST:', process.env.DB_HOST);
+// console.log('DB_PORT:', process.env.DB_PORT);
 
 // Validate environment variables
 const requiredEnvVars = ['DB_NAME', 'DB_USERNAME', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT'];

@@ -133,7 +133,7 @@ const AddStudent = () => {
         AmountDue: studentData.AmountDue.replace("₹", "").trim(),
       };
 
-      console.log("Data being sent to backend:", formattedData);
+      // console.log("Data being sent to backend:", formattedData);
 
       // Get the JWT token from local storage
       const token = localStorage.getItem("jwtToken");
@@ -149,7 +149,7 @@ const AddStudent = () => {
       );
 
       alert(response.data.message);
-      console.log("Server response:", response);
+      // console.log("Server response:", response);
 
       setStudentData({
         RegistrationNumber: "",

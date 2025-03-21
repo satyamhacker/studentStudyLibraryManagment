@@ -52,7 +52,7 @@ const ShowStudentData = () => {
         `${import.meta.env.VITE_BACKEND_BASE_URL}/getStudents`,
         navigate
       );
-      console.log("response.data: ", data);
+      // console.log("response.data: ", data);
 
       if (data.length === 0) {
         alert("Please add Student data.");
