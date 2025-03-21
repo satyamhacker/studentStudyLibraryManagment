@@ -164,6 +164,10 @@ const ShowVacantSeats = () => {
                   <p>
                     <strong>Payment Mode:</strong> {student.PaymentMode}
                   </p>
+                  <p>
+                    <strong>Admission Amount:</strong> ₹
+                    {student.AdmissionAmount}
+                  </p>
                 </Card.Text>
               </Card.Body>
             </Card>

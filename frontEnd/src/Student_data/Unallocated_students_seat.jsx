@@ -107,6 +107,7 @@ const UnallocatedStudentsSeat = () => {
                 <th>Shift</th>
                 <th>Seat Number</th>
                 <th>Payment Mode</th>
+                <th>Admission Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -123,6 +124,7 @@ const UnallocatedStudentsSeat = () => {
                   <td>{student.Shift}</td>
                   <td>{student.SeatNumber}</td>
                   <td>{student.PaymentMode}</td>
+                  <td>{student.AdmissionAmount}</td>
                 </tr>
               ))}
             </tbody>

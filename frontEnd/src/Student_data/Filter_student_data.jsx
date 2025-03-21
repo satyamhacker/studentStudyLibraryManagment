@@ -294,6 +294,7 @@ const FilterStudentData = () => {
                 <th>Locker Number</th>
                 <th>Fees Paid Till Date</th>
                 <th>Payment Mode</th>
+                <th>Admission Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -317,6 +318,7 @@ const FilterStudentData = () => {
                     {new Date(student.FeesPaidTillDate).toLocaleDateString()}
                   </td>
                   <td>{student.PaymentMode}</td>
+                  <td>{"₹" + student.AdmissionAmount}</td>
                 </tr>
               ))}
             </tbody>

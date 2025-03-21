@@ -84,6 +84,7 @@ const StudentWithDues = () => {
                 <th>Locker Number</th>
                 <th>Fees Paid Till</th>
                 <th>Payment Mode</th>
+                <th>Admission Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -108,6 +109,7 @@ const StudentWithDues = () => {
                     )}
                   </td>
                   <td>{student.PaymentMode}</td>
+                  <td>{"₹" + student.AdmissionAmount}</td>
                 </tr>
               ))}
             </tbody>
